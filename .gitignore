@@ -1,0 +1,43 @@
+*.iml
+/local.properties
+
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+
+# Mac OS
+.DS_Store
+
+# Built application files
+*.apk
+*.ap_
+
+# Files for the Dalvik VM
+*.dex
+
+
+# Generated files
+bin/
+gen/
+
+# Gradle files
+.gradle/
+build/
+gradlew
+gradlew.bat
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+
+# Idea
+/.idea/**
+# Do not exclude project Dictionary
+!.idea/**/dictionaries/project.xml
+
+# Private properties
+private.properties
