@@ -27,7 +27,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
-import me.proton.fusion.ConditionWatcher
+import me.proton.fusion.waits.ConditionWatcher
 import org.hamcrest.CoreMatchers.anything
 
 /**

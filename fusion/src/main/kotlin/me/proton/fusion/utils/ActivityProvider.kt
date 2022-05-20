@@ -42,4 +42,18 @@ object ActivityProvider {
         }
         return currentActivity[0]
     }
+
+    private fun getActivity(stage: Stage): Activity? {
+        val currentActivity = arrayOfNulls<Activity>(1)
+        getInstrumentation().runOnMainSync {
+            val activities = ActivityLifecycleMonitorRegistry
+                .getInstance()
+                .getActivitiesInStage(stage)
+
+            if (activities.iterator().hasNext()) {
+                currentActivity[0] = activities.iterator().next() as Activity
+            }
+        }
+        return currentActivity[0]
+    }
 }

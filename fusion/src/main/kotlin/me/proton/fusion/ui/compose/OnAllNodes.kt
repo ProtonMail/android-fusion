@@ -31,7 +31,8 @@ import androidx.compose.ui.test.printToString
 import me.proton.fusion.FusionConfig
 
 /**
- * Contains identifiers, actions, and checks for Compose UI allNodes element, i.e. [SemanticsNodeInteractionCollection].
+ * Contains identifiers, actions, and checks to find all semantics nodes
+ * (i.e. [SemanticsNodeInteractionCollection]), that match the given condition.
  */
 class OnAllNodes(
     private val interaction: SemanticsNodeInteractionCollection? = null,
@@ -84,10 +85,8 @@ class OnAllNodes(
 
     fun filterToOne(node: OnNode) = OnNode(nodeInteraction().filterToOne(node.semanticMatcher()))
 
-    //TODO - return OnNodes()
-    fun filter(node: OnNode): SemanticsNodeInteractionCollection {
-        return nodeInteraction().filter(node.semanticMatcher())
-    }
+    fun filter(node: OnNode) =
+        apply { toNodes { nodeInteraction().filter(node.semanticMatcher()) } }
 
     fun assertAll(node: OnNode) =
         apply { toNodes { nodeInteraction().assertAll(node.semanticMatcher()) } }

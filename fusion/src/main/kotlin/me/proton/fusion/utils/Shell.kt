@@ -28,16 +28,18 @@ import org.junit.runner.Description
 import java.io.File
 
 /**
- * Contains device system actions, and additional helper functions.
+ * Controls device system parameters, and helper functions where system shell is used.
  */
 object Shell {
 
     private val automation = InstrumentationRegistry.getInstrumentation().uiAutomation!!
     private val screenshotLocation =
-        Environment.getExternalStorageDirectory().resolve("Screenshots")
-    private val artifactsLocation = Environment.getExternalStorageDirectory()
-        .resolve(FusionConfig.targetContext().packageName)
-        .resolve("artifacts")
+        InstrumentationRegistry.getInstrumentation().targetContext.getExternalFilesDir(null)
+            ?.resolve("Screenshots")
+    private val artifactsLocation =
+        InstrumentationRegistry.getInstrumentation().targetContext.getExternalFilesDir(null)
+            ?.resolve(FusionConfig.targetContext().packageName)
+            ?.resolve("artifacts")
 //
 //    init {
 //        // Prepare artifacts directory
@@ -45,15 +47,6 @@ object Shell {
 //        automation.waitForIdle(500, 1000)
 //        automation.executeShellCommand("mkdir -p $screenshotLocation")
 //    }
-
-    /**
-     * Deletes artifacts folder from /sdcard/Download.
-     */
-    fun deleteDownloadArtifactsFolder() {
-        val downloadArtifactsPath =
-            FusionConfig.targetContext().getExternalFilesDir(null)!!.absolutePath
-        automation.executeShellCommand("rm -rf $downloadArtifactsPath")
-    }
 
     /**
      * Sets up device in ready for automation mode.

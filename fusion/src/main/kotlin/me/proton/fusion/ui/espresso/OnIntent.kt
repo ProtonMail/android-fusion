@@ -29,7 +29,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import me.proton.fusion.ConditionWatcher
+import me.proton.fusion.waits.ConditionWatcher
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf

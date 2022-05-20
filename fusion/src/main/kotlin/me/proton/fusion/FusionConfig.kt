@@ -23,6 +23,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
 
+/**
+ *
+ */
 object FusionConfig {
 
     val compose = Compose

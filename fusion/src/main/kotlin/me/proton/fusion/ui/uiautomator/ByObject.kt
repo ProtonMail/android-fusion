@@ -38,16 +38,16 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
         objectSelector = newSelector
     }
 
-    protected var onDescendantObject: ByObject? = null
+    private var onDescendantObject: ByObject? = null
     private var descendantWithDepth: BySelector? = null
     private var depth: Int? = null
-    protected var exceptionSelectorText: String = ""
+    private var exceptionSelectorText: String = ""
     private var givenObject: UiObject2? = null
     private var givenObjectSelector: BySelector? = null
-    protected var locatedObject: UiObject2? = null
+    private var locatedObject: UiObject2? = null
+    private var objectSelectorHash: Int? = null
     protected var locatedObjects: List<UiObject2>? = null
     protected var objectPosition: Int? = null
-    private var objectSelectorHash: Int? = null
 
     /** [UiObject] properties. **/
     fun childCount(): Int = uiObject2().childCount

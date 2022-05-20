@@ -28,7 +28,8 @@ import me.proton.fusion.FusionConfig.fusionTag
 import me.proton.fusion.FusionConfig
 
 /**
- * Contains identifiers, actions, and checks for Compose UI onNode element, i.e. [SemanticsNodeInteraction].
+ * Contains identifiers, actions, and checks to find a single semantics node
+ * that matches the given condition i.e. [SemanticsNodeInteraction].
  */
 open class OnNode(
     private val interaction: SemanticsNodeInteraction? = null,
@@ -69,16 +70,16 @@ open class OnNode(
 
     fun scrollTo() = apply { toNode { nodeInteraction().performScrollTo() } }
 
-    fun swipeDown() = apply { toNode { nodeInteraction().performGesture { swipeDown() } } }
+    fun swipeDown() = apply { toNode { nodeInteraction().performTouchInput { swipeDown() } } }
 
-    fun swipeLeft() = apply { toNode { nodeInteraction().performGesture { swipeLeft() } } }
+    fun swipeLeft() = apply { toNode { nodeInteraction().performTouchInput { swipeLeft() } } }
 
-    fun swipeRight() = apply { toNode { nodeInteraction().performGesture { swipeRight() } } }
+    fun swipeRight() = apply { toNode { nodeInteraction().performTouchInput { swipeRight() } } }
 
-    fun swipeUp() = apply { toNode { nodeInteraction().performGesture { swipeUp() } } }
+    fun swipeUp() = apply { toNode { nodeInteraction().performTouchInput { swipeUp() } } }
 
-    fun sendGesture(block: GestureScope.() -> Unit) =
-        apply { toNode { nodeInteraction().performGesture(block) } }
+    fun sendGesture(block: TouchInjectionScope.() -> Unit) =
+        apply { toNode { nodeInteraction().performTouchInput(block) } }
 
     fun clearText() = apply { toNode { nodeInteraction().apply { performTextClearance() } } }
 
@@ -175,19 +176,28 @@ open class OnNode(
     }
 
     /** Node selectors **/
-    fun onChildAt(position: Int) = nodeInteraction().onChildAt(position)
+    fun onChildAt(position: Int) = OnNode(nodeInteraction().onChildAt(position))
 
-    fun onChild() = OnNode(nodeInteraction().onChild()).nodeInteraction()
+    fun onChild() = OnNode(nodeInteraction().onChild())
 
-    fun onParent() = OnNode(nodeInteraction().onParent()).nodeInteraction()
+    fun onChild(node: OnNode) =
+        OnNode(nodeInteraction().onChildren().filterToOne(node.semanticMatcher()))
 
-    fun onSibling() = OnNode(nodeInteraction().onSibling()).nodeInteraction()
+    fun onParent() = OnNode(nodeInteraction().onParent())
+
+    fun onSibling() = OnNode(nodeInteraction().onSibling())
+
+    fun onSibling(node: OnNode) =
+        OnNode(nodeInteraction().onSiblings().filterToOne(node.semanticMatcher()))
 
     fun onChildren() = OnAllNodes(nodeInteraction().onChildren())
 
     fun onSiblings() = OnAllNodes(nodeInteraction().onSiblings())
 
     fun onAncestors() = OnAllNodes(nodeInteraction().onAncestors())
+
+    fun onAncestor(node: OnNode) =
+        OnNode(nodeInteraction().onAncestors().filterToOne(node.semanticMatcher()))
 
     fun waitForDisplayed() = apply {
         FusionConfig.compose.testRule.waitUntil(timeoutMillis) {
