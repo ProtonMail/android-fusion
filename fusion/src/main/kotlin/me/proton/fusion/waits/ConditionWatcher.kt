@@ -35,7 +35,7 @@ interface ConditionWatcher {
     fun waitForCondition(
         watchTimeout: Long = commandTimeout,
         watchInterval: Long = 250L,
-        conditionBlock: () -> Unit,
+        conditionBlock: () -> Unit
     ) {
         var throwable: Throwable =
             TimeoutException("Condition was not met in $watchTimeout ms. No exceptions caught.")

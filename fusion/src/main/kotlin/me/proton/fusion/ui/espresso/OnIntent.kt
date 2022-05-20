@@ -29,6 +29,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import me.proton.fusion.FusionConfig
 import me.proton.fusion.waits.ConditionWatcher
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
@@ -43,6 +44,9 @@ class OnIntent : ConditionWatcher {
         IntentMatchers.anyIntent(),
         IntentMatchers.isInternal()
     )
+    private var defaultTimeout: Long = FusionConfig.commandTimeout
+
+    fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
 
     fun init() = apply { Intents.init() }
 
@@ -155,7 +159,7 @@ class OnIntent : ConditionWatcher {
 
     // Checks with wait that intent with given matchers is sent
     fun checkSent() {
-        waitForCondition { intended(intentMatcher()) }
+        waitForCondition(defaultTimeout) { intended(intentMatcher()) }
     }
 
     fun respondWith(result: Instrumentation.ActivityResult) {

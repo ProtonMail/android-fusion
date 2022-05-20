@@ -25,6 +25,8 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
+import me.proton.fusion.FusionConfig
+import me.proton.fusion.ui.uiautomator.UiSelectorObject
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import me.proton.fusion.waits.ConditionWatcher
@@ -46,6 +48,10 @@ class OnListView {
     }
 
     class Builder(private val dataMatcher: Matcher<out Any?>) : ConditionWatcher {
+        private var defaultTimeout: Long = FusionConfig.commandTimeout
+
+        fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
+
         /** [DataInteraction] matcher functions. **/
         fun atPosition(position: Int) = apply {
             dataInteraction().atPosition(position)
@@ -126,7 +132,7 @@ class OnListView {
 
         /** Builds [DataInteraction] based on parameters provided to [OnListView.Builder]. **/
         private fun dataInteraction(viewAssertion: ViewAssertion = matches(ViewMatchers.isDisplayed())): DataInteraction {
-            waitForCondition { onData(dataMatcher).check(viewAssertion) }
+            waitForCondition(defaultTimeout) { onData(dataMatcher).check(viewAssertion) }
             return onData(dataMatcher)
         }
     }

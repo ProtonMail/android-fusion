@@ -37,7 +37,7 @@ object Waits : ConditionWatcher {
         action: ViewAction,
         timeout: Long = commandTimeout
     ): ViewInteraction {
-        waitForCondition { interaction.perform(action) }
+        waitForCondition(timeout) { interaction.perform(action) }
         return interaction
     }
 
@@ -56,7 +56,7 @@ object Waits : ConditionWatcher {
         action: ViewAction,
         timeout: Long = commandTimeout
     ): ViewInteraction {
-        waitForCondition {
+        waitForCondition(timeout) {
             interaction.perform(action)
             Espresso.onView(matcher).check(assertion)
         }
@@ -67,7 +67,7 @@ object Waits : ConditionWatcher {
     fun waitUntilRecyclerViewPopulated(@IdRes id: Int, timeout: Long = commandTimeout) {
         val timedOutResources = ArrayList<String>()
 
-        waitForCondition {
+        waitForCondition(timeout) {
             try {
                 val rv = currentActivity!!.findViewById<RecyclerView>(id)
                 if (rv != null) {

@@ -25,7 +25,7 @@ import androidx.test.uiautomator.*
 import me.proton.fusion.FusionConfig.UiAutomator.shouldSearchUiObjectEachAction
 import junit.framework.TestCase.fail
 import me.proton.fusion.waits.ConditionWatcher
-import me.proton.fusion.Fusion
+import me.proton.fusion.FusionConfig
 import org.hamcrest.MatcherAssert.assertThat
 
 /**
@@ -38,6 +38,7 @@ class UiSelectorObject : ConditionWatcher {
     private fun enabledState() = uiObject().isEnabled
     private fun clickableState() = uiObject().isClickable
     private fun selectedState() = uiObject().isSelected
+    private var defaultTimeout: Long = FusionConfig.commandTimeout
 
     /**
      * Selectors that can be applied to [UiObject].
@@ -143,6 +144,7 @@ class UiSelectorObject : ConditionWatcher {
      * Actions.
      */
     fun click() = apply { uiObject().click() }
+
     fun clearText() = apply { uiObject().clearTextField() }
 
     fun longClick() = apply { uiObject().longClick() }
@@ -273,23 +275,26 @@ class UiSelectorObject : ConditionWatcher {
     /**
      * Object waits.
      */
-    fun waitForExists(timeout: Long = defaultTimeout) =
+    fun waitForExists() =
         apply { uiObject() }
 
-    fun waitForEnabled(timeout: Long = defaultTimeout) =
-        apply { waitForCondition { enabledState() } }
+    fun waitForEnabled() =
+        apply { waitForCondition(defaultTimeout) { enabledState() } }
 
-    fun waitForDisabled(timeout: Long = defaultTimeout) =
-        apply { waitForCondition { !enabledState() } }
+    fun waitForDisabled() =
+        apply { waitForCondition(defaultTimeout) { !enabledState() } }
 
-    fun waitForClickable(timeout: Long = defaultTimeout) =
-        apply { waitForCondition { clickableState() } }
+    fun waitForClickable() =
+        apply { waitForCondition(defaultTimeout) { clickableState() } }
 
-    fun waitForSelected(timeout: Long = defaultTimeout) =
-        apply { waitForCondition { selectedState() } }
+    fun waitForSelected() =
+        apply { waitForCondition(defaultTimeout) { selectedState() } }
 
-    fun waitUntilGone(timeout: Long = defaultTimeout) =
-        apply { uiObject(shouldExist = false).waitUntilGone(timeout) }
+    fun waitUntilGone() =
+        apply { uiObject(shouldExist = false).waitUntilGone(defaultTimeout) }
+
+    /** Timeout **/
+    fun withTimeout(timeout: Long = defaultTimeout) = apply { defaultTimeout = timeout }
 
     /** The core function where object selector is defined. **/
     private fun uiObject(shouldExist: Boolean = true): UiObject {
@@ -298,7 +303,7 @@ class UiSelectorObject : ConditionWatcher {
         }
         val locatedObject = uiDevice.findObject(objectSelector)
         return if (!locatedObject.exists() || shouldSearchUiObjectEachAction && shouldExist) {
-            waitForCondition {
+            waitForCondition(defaultTimeout) {
                 assertThat(
                     "Expected object with selector: $objectSelector to exist but it doesn't ",
                     locatedObject.exists()
@@ -311,7 +316,6 @@ class UiSelectorObject : ConditionWatcher {
     }
 
     companion object {
-        var defaultTimeout: Long = 5_000L
         private val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         private val config: Configurator = Configurator.getInstance()
 

@@ -55,7 +55,7 @@ class OnView : ConditionWatcher, OnViewMatchers<OnView>() {
         return if (viewInteraction == null || assertionHash != viewAssertion.hashCode()) {
             assertionHash = viewAssertion.hashCode()
             viewInteraction = onView(viewMatcher()).inRoot(rootMatcher())
-            waitForCondition(timeout) { viewInteraction!!.check(viewAssertion) }
+            waitForCondition(defaultTimeout) { viewInteraction!!.check(viewAssertion) }
             viewInteraction!!
         } else {
             viewInteraction!!

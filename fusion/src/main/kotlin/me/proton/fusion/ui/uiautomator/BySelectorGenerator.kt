@@ -29,7 +29,7 @@ import java.util.regex.Pattern
 @Suppress("UNCHECKED_CAST", "UNUSED_EXPRESSION")
 open class BySelectorGenerator<T> {
 
-    var objectSelector: BySelector? = null
+    protected var objectSelector: BySelector? = null
 
     private fun addSelector(selector: BySelector): T {
         if (objectSelector != null) {

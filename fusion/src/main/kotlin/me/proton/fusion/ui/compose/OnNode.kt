@@ -49,7 +49,7 @@ open class OnNode(
                 newInteraction
             } else {
                 // Wait for element existence before acting on it.
-                FusionConfig.compose.testRule.waitUntil(timeoutMillis) { newInteraction.exists() }
+                FusionConfig.compose.testRule.waitUntil(defaultTimeout) { newInteraction.exists() }
                 newInteraction
             }
         }
@@ -108,36 +108,36 @@ open class OnNode(
             }
         }
 
-    fun checkDoesNotExist() = apply { nodeInteraction(shouldNotExist = true).assertDoesNotExist() }
+    fun assertDoesNotExist() = apply { nodeInteraction(shouldNotExist = true).assertDoesNotExist() }
 
-    fun checkIsDisplayed() = apply { toNode { nodeInteraction().assertIsDisplayed() } }
+    fun assertIsDisplayed() = apply { toNode { nodeInteraction().assertIsDisplayed() } }
 
-    fun checkIsNotDisplayed() = apply { toNode { nodeInteraction().assertIsNotDisplayed() } }
+    fun assertIsNotDisplayed() = apply { toNode { nodeInteraction().assertIsNotDisplayed() } }
 
-    fun checkEnabled() = apply { toNode { nodeInteraction().assertIsEnabled() } }
+    fun assertEnabled() = apply { toNode { nodeInteraction().assertIsEnabled() } }
 
-    fun checkDisabled() = apply { toNode { nodeInteraction().assertIsNotEnabled() } }
+    fun assertDisabled() = apply { toNode { nodeInteraction().assertIsNotEnabled() } }
 
-    fun checkIsChecked() = apply { toNode { nodeInteraction().assertIsOn() } }
+    fun assertIsChecked() = apply { toNode { nodeInteraction().assertIsOn() } }
 
-    fun checkIsNotChecked() = apply { toNode { nodeInteraction().assertIsOff() } }
+    fun assertIsNotChecked() = apply { toNode { nodeInteraction().assertIsOff() } }
 
-    fun checkIsSelected() = apply { toNode { nodeInteraction().assertIsSelected() } }
+    fun assertIsSelected() = apply { toNode { nodeInteraction().assertIsSelected() } }
 
-    fun checkIsNotSelected() = apply { toNode { nodeInteraction().assertIsNotSelected() } }
+    fun assertIsNotSelected() = apply { toNode { nodeInteraction().assertIsNotSelected() } }
 
-    fun checkIsCheckable() = apply { toNode { nodeInteraction().assertIsToggleable() } }
+    fun assertIsCheckable() = apply { toNode { nodeInteraction().assertIsToggleable() } }
 
-    fun checkSelectable() = apply { toNode { nodeInteraction().assertIsSelectable() } }
+    fun assertSelectable() = apply { toNode { nodeInteraction().assertIsSelectable() } }
 
-    fun checkIsFocused() = apply { toNode { nodeInteraction().assertIsFocused() } }
+    fun assertIsFocused() = apply { toNode { nodeInteraction().assertIsFocused() } }
 
-    fun checkIsNotFocused() = apply { toNode { nodeInteraction().assertIsNotFocused() } }
+    fun assertIsNotFocused() = apply { toNode { nodeInteraction().assertIsNotFocused() } }
 
-    fun checkContentDescEquals(value: String) =
+    fun assertContentDescEquals(value: String) =
         apply { toNode { nodeInteraction().assertContentDescriptionEquals(value) } }
 
-    fun checkContentDescContains(text: String) =
+    fun assertContentDescContains(text: String) =
         apply {
             toNode {
                 nodeInteraction().assertContentDescriptionContains(
@@ -148,7 +148,7 @@ open class OnNode(
             }
         }
 
-    fun checkContentDescContainsIgnoringCase(text: String) =
+    fun assertContentDescContainsIgnoringCase(text: String) =
         apply {
             toNode {
                 nodeInteraction().assertContentDescriptionContains(
@@ -159,19 +159,19 @@ open class OnNode(
             }
         }
 
-    fun checkTextEquals(value: String) = apply {
+    fun assertTextEquals(value: String) = apply {
         toNode { nodeInteraction().assertTextEquals(value) }
     }
 
-    fun checkProgressBar(range: ProgressBarRangeInfo) = apply {
+    fun assertProgressBar(range: ProgressBarRangeInfo) = apply {
         toNode { nodeInteraction().assertRangeInfoEquals(range) }
     }
 
-    fun checkClickable() = apply { toNode { nodeInteraction().assertHasClickAction() } }
+    fun assertClickable() = apply { toNode { nodeInteraction().assertHasClickAction() } }
 
-    fun checkIsNotClickable() = apply { toNode { nodeInteraction().assertHasNoClickAction() } }
+    fun assertIsNotClickable() = apply { toNode { nodeInteraction().assertHasNoClickAction() } }
 
-    fun checkMatches(matcher: SemanticsMatcher, messagePrefixOnError: (() -> String)?) = apply {
+    fun assertMatches(matcher: SemanticsMatcher, messagePrefixOnError: (() -> String)?) = apply {
         toNode { nodeInteraction().assert(matcher, messagePrefixOnError) }
     }
 
@@ -200,43 +200,43 @@ open class OnNode(
         OnNode(nodeInteraction().onAncestors().filterToOne(node.semanticMatcher()))
 
     fun waitForDisplayed() = apply {
-        FusionConfig.compose.testRule.waitUntil(timeoutMillis) {
+        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
             nodeInteraction().isDisplayed()
         }
     }
 
     fun waitForEnabled() = apply {
-        FusionConfig.compose.testRule.waitUntil(timeoutMillis) {
+        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
             nodeInteraction().isEnabled()
         }
     }
 
     fun waitForDisabled() = apply {
-        FusionConfig.compose.testRule.waitUntil(timeoutMillis) {
+        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
             nodeInteraction().isEnabled()
         }
     }
 
     fun waitForContainsText(text: String) = apply {
-        FusionConfig.compose.testRule.waitUntil(timeoutMillis) {
+        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
             nodeInteraction().containsText(text)
         }
     }
 
     fun waitForSelected() = apply {
-        FusionConfig.compose.testRule.waitUntil(timeoutMillis) {
+        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
             nodeInteraction().isSelected()
         }
     }
 
     fun waitForNotSelected() = apply {
-        FusionConfig.compose.testRule.waitUntil(timeoutMillis) {
+        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
             nodeInteraction().isNotSelected()
         }
     }
 
     fun waitUntilGone() {
-        FusionConfig.compose.testRule.waitUntil(timeoutMillis) {
+        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
             nodeInteraction(true).doesNotExist()
         }
     }
@@ -254,34 +254,34 @@ open class OnNode(
     }
 
     private fun SemanticsNodeInteraction.exists(): Boolean {
-        return checkAssertion { this.assertExists() }
+        return assertion { this.assertExists() }
     }
 
     private fun SemanticsNodeInteraction.isDisplayed(): Boolean {
-        return checkAssertion { this.assertIsDisplayed() }
+        return assertion { this.assertIsDisplayed() }
     }
 
     private fun SemanticsNodeInteraction.isEnabled(): Boolean {
-        return checkAssertion { this.assertIsEnabled() }
+        return assertion { this.assertIsEnabled() }
     }
 
     private fun SemanticsNodeInteraction.isSelected(): Boolean {
-        return checkAssertion { this.assertIsSelected() }
+        return assertion { this.assertIsSelected() }
     }
 
     private fun SemanticsNodeInteraction.isNotSelected(): Boolean {
-        return checkAssertion { this.assertIsNotSelected() }
+        return assertion { this.assertIsNotSelected() }
     }
 
     private fun SemanticsNodeInteraction.isDisabled(): Boolean {
-        return checkAssertion { this.assertIsNotEnabled() }
+        return assertion { this.assertIsNotEnabled() }
     }
 
     private fun SemanticsNodeInteraction.containsText(text: String): Boolean {
-        return checkAssertion { this.assertTextContains(text) }
+        return assertion { this.assertTextContains(text) }
     }
 
-    private fun checkAssertion(assertion: () -> SemanticsNodeInteraction): Boolean {
+    private fun assertion(assertion: () -> SemanticsNodeInteraction): Boolean {
         try {
             assertion()
         } catch (e: AssertionError) {

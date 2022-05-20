@@ -23,7 +23,6 @@ import android.graphics.Rect
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.*
 import org.hamcrest.MatcherAssert
-
 import androidx.test.uiautomator.UiObject2
 import me.proton.fusion.FusionConfig
 import org.hamcrest.CoreMatchers.*
@@ -46,8 +45,11 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
     private var givenObjectSelector: BySelector? = null
     private var locatedObject: UiObject2? = null
     private var objectSelectorHash: Int? = null
+    private var defaultTimeout: Long = FusionConfig.commandTimeout
     protected var locatedObjects: List<UiObject2>? = null
     protected var objectPosition: Int? = null
+
+    fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
 
     /** [UiObject] properties. **/
     fun childCount(): Int = uiObject2().childCount
@@ -464,7 +466,6 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
     }
 
     companion object {
-        var defaultTimeout: Long = 5_000L
         private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 }
