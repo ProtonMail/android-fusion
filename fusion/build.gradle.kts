@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 29
+        targetSdk = 31
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,16 +36,16 @@ afterEvaluate {
                     username = "admin"
                     password = "auto123"
                 }
-                url = uri("http://localhost:8081/repository/mail/")
+                uri("http://localhost:8081/repository/mail/")
                 isAllowInsecureProtocol = true
             }
         }
         publications {
             create<MavenPublication>("binary") {
-//                groupId = "me.proton"
-//                artifactId = "fusion"
-//                version = "1.0.0"
-                //from(components["release"])
+                groupId = "me.proton"
+                artifactId = "fusion"
+                version = "1.0.0"
+                from(components["release"])
                 artifact ("build/outputs/aar/fusion-release.aar")
             }
         }
@@ -53,7 +53,6 @@ afterEvaluate {
 }
 
 dependencies {
-
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.compose.ui:ui:1.1.1")
     implementation("androidx.compose.ui:ui-test:1.1.1")
