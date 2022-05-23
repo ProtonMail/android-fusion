@@ -24,12 +24,14 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.*
 import me.proton.fusion.FusionConfig.UiAutomator.shouldSearchUiObjectEachAction
 import junit.framework.TestCase.fail
-import me.proton.fusion.ConditionWatcher
+import me.proton.fusion.waits.ConditionWatcher
+import me.proton.fusion.Fusion
 import org.hamcrest.MatcherAssert.assertThat
 
 /**
  * Class that wraps interactions for [UiObject] element.
  */
+@Suppress("UNUSED_EXPRESSION")
 class UiSelectorObject : ConditionWatcher {
 
     private var objectSelector: UiSelector = UiSelector()
@@ -140,11 +142,7 @@ class UiSelectorObject : ConditionWatcher {
     /**
      * Actions.
      */
-    fun click() = apply {
-        //waitForExists()
-        uiObject().click()
-    }
-
+    fun click() = apply { uiObject().click() }
     fun clearText() = apply { uiObject().clearTextField() }
 
     fun longClick() = apply { uiObject().longClick() }

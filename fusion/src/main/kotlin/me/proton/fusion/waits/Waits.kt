@@ -13,7 +13,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
-import me.proton.fusion.ConditionWatcher
 import me.proton.fusion.FusionConfig
 import me.proton.fusion.FusionConfig.commandTimeout
 import me.proton.fusion.FusionTest
@@ -22,7 +21,7 @@ import me.proton.fusion.utils.Shell
 import org.hamcrest.Matcher
 
 /**
- * Contains different wait functions and retry actions.
+ * Contains wait functions and retry actions.
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 object Waits : ConditionWatcher {

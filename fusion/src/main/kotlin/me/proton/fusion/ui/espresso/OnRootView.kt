@@ -27,7 +27,7 @@ import org.hamcrest.core.AllOf
 import java.util.ArrayList
 
 /**
- * Simplifies syntax to apply multiple [RootMatchers] on root view.
+ * Simplifies syntax for applying multiple [RootMatchers] to a root view.
  */
 class OnRootView {
     private val matchers = ArrayList<Matcher<Root>>()

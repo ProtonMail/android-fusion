@@ -30,12 +30,13 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnHolderItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers
-import me.proton.fusion.ConditionWatcher
+import me.proton.fusion.waits.ConditionWatcher
 import me.proton.fusion.ui.espresso.Actions.clickOnMatchedDescendant
 import org.hamcrest.Matcher
 
 /**
- * Builder like class that simplifies syntax for actions and verifications on [RecyclerView.ViewHolder].
+ * Builder like class that simplifies syntax for actions and verifications on
+ * [RecyclerView.ViewHolder].
  */
 class OnRecyclerView : ConditionWatcher, OnViewMatchers<OnRecyclerView>() {
     private var position: Int? = null

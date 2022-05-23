@@ -3,6 +3,9 @@ package me.proton.fusion.ui.device
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 
+/**
+ * The collection of functions to control the test device using the UiDevice API.
+ */
 class OnDevice {
 
     private val automation = InstrumentationRegistry.getInstrumentation().uiAutomation!!

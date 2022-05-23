@@ -30,7 +30,21 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
+/**
+ * Helper class to deal with files and folders used during testing.
+ */
 object FileUtils {
+
+    private val automation = InstrumentationRegistry.getInstrumentation().uiAutomation!!
+
+    /**
+     * Deletes artifacts folder from /sdcard/Download.
+     */
+    fun deleteDownloadArtifactsFolder() {
+        val downloadArtifactsPath =
+            FusionConfig.targetContext().getExternalFilesDir(null)!!.absolutePath
+        automation.executeShellCommand("rm -rf $downloadArtifactsPath")
+    }
 
     /**
      * Creates or clears directory with provided [path].

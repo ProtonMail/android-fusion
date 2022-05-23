@@ -28,13 +28,20 @@ import me.proton.fusion.ui.uiautomator.ByObjects
 import me.proton.fusion.ui.uiautomator.UiSelectorObject
 import me.proton.fusion.utils.Shell
 
+/**
+ * An entry point to Fusion API.
+ */
 interface Fusion {
+
+    val fusionConfig: FusionConfig
+        get() = FusionConfig
 
     /**
      *  UiAutomator with UiSelector.
      */
     val uiObject: UiSelectorObject
         get() = UiSelectorObject()
+
 
     /**
      *  UiAutomator with BySelector.
@@ -64,16 +71,13 @@ interface Fusion {
         get() = OnView()
 
     /**
-     * Compose UI test.
+     * ComposeUiTest.
      */
     val node: OnNode
         get() = OnNode()
 
     val allNodes: OnAllNodes
         get() = OnAllNodes()
-
-    val fusionConfig: FusionConfig
-        get() = FusionConfig
 
     /**
      * System.

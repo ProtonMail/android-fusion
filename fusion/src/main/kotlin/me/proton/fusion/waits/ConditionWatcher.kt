@@ -16,9 +16,10 @@
  * along with ProtonCore.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.proton.fusion
+package me.proton.fusion.waits
 
 import android.util.Log
+import me.proton.fusion.FusionConfig
 import me.proton.fusion.FusionConfig.commandTimeout
 import me.proton.fusion.FusionConfig.fusionTag
 import me.proton.fusion.FusionTest.Companion.testName

@@ -3,6 +3,7 @@ package me.proton.fusion.ui.espresso
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers
@@ -13,11 +14,14 @@ import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
 import java.util.ArrayList
 
+/**
+ * Provides the API for [ViewMatchers] generation.
+ */
 @Suppress("UNCHECKED_CAST")
 open class OnViewMatchers<T> {
 
     protected var timeout = FusionConfig.commandTimeout
-    protected val matchers: ArrayList<Matcher<View>>
+    private val matchers: ArrayList<Matcher<View>>
         get() = arrayListOf()
     private val rootMatchers: ArrayList<Matcher<Root>>
         get() = arrayListOf()

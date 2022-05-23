@@ -28,6 +28,9 @@ import androidx.compose.ui.text.input.ImeAction
 import me.proton.fusion.FusionConfig
 import me.proton.fusion.utils.StringUtils
 
+/**
+ * Provides the API for Node [SemanticsMatcher] generation.
+ */
 open class NodeBuilder<T> {
     var shouldUseUnmergedTree: Boolean = false
     var timeoutMillis: Long = 10_000L

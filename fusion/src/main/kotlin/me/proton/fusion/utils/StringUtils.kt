@@ -22,6 +22,9 @@ import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import me.proton.fusion.FusionConfig
 
+/**
+ * Contains functions that return string resource by its id using target app context.
+ */
 object StringUtils {
 
     fun stringFromResource(@StringRes id: Int, vararg formatArgs: Any): String =

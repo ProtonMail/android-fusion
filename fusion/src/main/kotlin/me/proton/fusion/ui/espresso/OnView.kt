@@ -29,14 +29,14 @@ import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.matcher.ViewMatchers
-import me.proton.fusion.ConditionWatcher
+import me.proton.fusion.waits.ConditionWatcher
 import me.proton.fusion.utils.StringUtils.stringFromResource
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 
 /**
- * Builder like class that allows to write [ViewActions] and [ViewAssertion] for single [View].
+ * Contains [ViewActions] and [ViewAssertion] Fusion API for a single [View].
  */
 class OnView : ConditionWatcher, OnViewMatchers<OnView>() {
     private var viewInteraction: ViewInteraction? = null

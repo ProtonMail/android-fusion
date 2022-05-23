@@ -24,14 +24,13 @@ import androidx.test.uiautomator.UiObject2
 import java.util.regex.Pattern
 
 /**
- * Generates the selector for [UiObject2] element.
+ * Generates selector for [UiObject2] element.
  */
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "UNUSED_EXPRESSION")
 open class BySelectorGenerator<T> {
 
     var objectSelector: BySelector? = null
 
-    @Suppress("UNCHECKED_CAST")
     private fun addSelector(selector: BySelector): T {
         if (objectSelector != null) {
             objectSelector.apply { selector }
@@ -119,10 +118,13 @@ open class BySelectorGenerator<T> {
     fun withResIdMatches(pattern: Pattern): T = addSelector(By.res(pattern))
 
     /**
-     * Child and sibling selectors.
+     * Descendant selectors.
      */
     fun hasDescendant(byObject: ByObject): T =
         addSelector(By.hasDescendant(byObject.objectSelector))
 
+    /**
+     * Child selector.
+     */
     fun hasChild(byObject: ByObject): T = addSelector(By.hasChild(byObject.objectSelector))
 }
