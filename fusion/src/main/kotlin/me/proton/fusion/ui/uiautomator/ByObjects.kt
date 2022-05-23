@@ -35,7 +35,10 @@ class ByObjects : BySelectorGenerator<ByObjects>() {
     private var scrollable: Boolean? = null
     private var shouldWaitForObject: Boolean = true
     private var objectSelectorHash: Int? = null
+    private var defaultTimeout: Long = FusionConfig.commandTimeout
     private var locatedObjects: List<UiObject2>? = null
+
+    fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
 
     /** [UiObject] properties. **/
     fun size(): Int = uiObjects2().size
@@ -67,7 +70,7 @@ class ByObjects : BySelectorGenerator<ByObjects>() {
 
     private fun waitForObjects(
         bySelector: BySelector?,
-        timeout: Long = FusionConfig.uiAutomator.timeout
+        timeout: Long = FusionConfig.commandTimeout
     ): List<UiObject2> {
         MatcherAssert.assertThat(
             "Given selector: \"$bySelector\" is empty or null",

@@ -42,15 +42,10 @@ import org.junit.runner.Description
  */
 open class FusionTest(
     private val activity: Class<out Activity>,
-    defaultTimeout: Long = 10_000L,
     tries: Int = 1,
     testWatcher: TestWatcher = TestExecutionWatcher(),
     activityScenarioRule: ActivityScenarioRule<out Activity> = ActivityScenarioRule(activity),
 ) : Fusion {
-
-    init {
-        commandTimeout = defaultTimeout
-    }
 
     class TestExecutionWatcher : TestWatcher() {
         override fun failed(e: Throwable?, description: Description?) =

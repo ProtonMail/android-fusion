@@ -33,7 +33,7 @@ import me.proton.fusion.utils.StringUtils
  */
 open class NodeBuilder<T> {
     var shouldUseUnmergedTree: Boolean = false
-    var timeoutMillis: Long = 10_000L
+    protected var defaultTimeout: Long = FusionConfig.commandTimeout
 
     private val semanticsMatchers = ArrayList<SemanticsMatcher>()
 
@@ -52,7 +52,7 @@ open class NodeBuilder<T> {
 
     @Suppress("UNCHECKED_CAST")
     fun withTimeout(timeout: Long): T {
-        timeoutMillis = timeout
+        defaultTimeout = timeout
         return this as T
     }
 

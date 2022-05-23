@@ -3,7 +3,6 @@ package me.proton.fusion.ui.espresso
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers
@@ -20,15 +19,13 @@ import java.util.ArrayList
 @Suppress("UNCHECKED_CAST")
 open class OnViewMatchers<T> {
 
-    protected var timeout = FusionConfig.commandTimeout
+    protected var defaultTimeout: Long = FusionConfig.commandTimeout
     private val matchers: ArrayList<Matcher<View>>
         get() = arrayListOf()
     private val rootMatchers: ArrayList<Matcher<Root>>
         get() = arrayListOf()
 
-    fun withTimeout(milliseconds: Long) = apply {
-        timeout = milliseconds
-    }
+    fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
 
     /** Final [Matcher] for the view. **/
     fun viewMatcher(): Matcher<View> = AllOf.allOf(matchers)
