@@ -68,8 +68,8 @@ class ProtonTestClass : Fusion {
         intent.hasAction(Intent.ACTION_SEND).toPackage("ch.proton.com").checkSent()
   
         // ComposeUiTest
-        node.withTag("testTag").checkTextEquals("Proton Drive")
-        allNodes.withTag("testTag").assertAll(node.containsText("@proton.me"))
+        node.withTag("testTag").assertTextEquals("Proton Drive")
+        allNodes.withTag("testTag").assertEach(node.containsText("@proton.me"))
   
         // UiDevice
         device.pressHome().pressRecentApps()
@@ -229,9 +229,9 @@ See Android ***UI Automator*** documentation [here](https://developer.android.co
 Fusion UI Automator API follows the same API split as native Android UI Automator framework - UiObject and UiObject2. UiObject is represented by ***uiObject*** and ***byObject*** represents UiObject2.
 
 ###uiObject - uses UiObject API
-Clicking element that matched multiple matchers:
+One matcher case:
 ```kotlin
-uiObject.withPkg("ch.protonmail.android").withText("Proton Mail").click()
+uiObject.withText("Proton Mail").click()
 ```
 
 Clicking element that matched multiple matchers:
@@ -249,7 +249,7 @@ Locating element by index and waiting for enabled state:
 uiObject.byIndex(0).waitForEnabled().click()
 ```
 
-Locating element by index and waiting for enabled state:
+Locating element by index and interacting with its child:
 ```kotlin
 uiObject.byIndex(0).onChild(uiObject.withText("Login")).click()
 ```
@@ -321,12 +321,12 @@ node.withTag("testTag").click()
 
 Combining multiple node matchers:
 ```kotlin
-node.withTag("testTag").withText("sampleText").checkIsDisplayed()
+node.withTag("testTag").withText("sampleText").assertIsDisplayed()
 ```
 
-Checking node existence with timeout (uses native `waitUntil()` mechanism):
+Asserting node existence with timeout before checking if it is displayed (uses native `waitUntil()` mechanism):
 ```kotlin
-node.withTag("testTag").withTimeout(10_000L).checkIsDisplayed()
+node.withTag("testTag").withTimeout(10_000L).assertIsDisplayed()
 ```
 
 The above approach with timeout can be also used with node actions:
@@ -341,7 +341,7 @@ node.hasChild(node.withTag("childTestTag")).click()
 
 Verifying that node does not exist: 
 ```kotlin
-node.withTag("testTag").isChecked().checkDoesNotExist()
+node.withTag("testTag").isChecked().assertDoesNotExist()
 ```
 Waiting for a node that existed before to disappear from the hierarchy:
 ```kotlin
@@ -364,7 +364,7 @@ Use `onSibling()` to locate sibling node and `onDescendant()` for a deeper look 
 
 Asserting all nodes with test tag contain given text:
 ```kotlin
-allNodes.withTag("testTag").assertAll(node.containsText("@proton.me"))
+allNodes.withTag("testTag").assertEach(node.containsText("@proton.me"))
 ```
 
 Asserting that at least one node from the list of all nodes matches the given matcher:
@@ -381,6 +381,8 @@ Interacting with the child of one of the nodes that were filtered by the test ta
 ```kotlin
 allNodes.withTag("testTag").onChild(node.withText(R.string.settings)).click()
 ```
+
+Explore the rest yourself to learn more!
 
 ## License
 

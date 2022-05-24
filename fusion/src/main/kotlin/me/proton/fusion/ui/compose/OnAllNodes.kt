@@ -31,7 +31,7 @@ import androidx.compose.ui.test.printToString
 import me.proton.fusion.FusionConfig
 
 /**
- * Contains identifiers, actions, and checks to find all semantics nodes
+ * Contains identifiers, actions, and assertions to find all semantics nodes
  * (i.e. [SemanticsNodeInteractionCollection]), that match the given condition.
  */
 class OnAllNodes(
@@ -88,7 +88,7 @@ class OnAllNodes(
     fun filter(node: OnNode) =
         apply { toNodes { nodeInteraction().filter(node.semanticMatcher()) } }
 
-    fun assertAll(node: OnNode) =
+    fun assertEach(node: OnNode) =
         apply { toNodes { nodeInteraction().assertAll(node.semanticMatcher()) } }
 
     fun assertAny(node: OnNode) =
