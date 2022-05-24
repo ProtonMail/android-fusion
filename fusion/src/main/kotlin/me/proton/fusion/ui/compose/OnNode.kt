@@ -94,10 +94,10 @@ open class OnNode(
 
     fun performImeAction() = apply { toNode { nodeInteraction().apply { performImeAction() } } }
 
-    /** Node checks **/
-    fun checkExists() = apply { toNode { nodeInteraction().assertExists() } }
+    /** Node assertions **/
+    fun assertExists() = apply { toNode { nodeInteraction().assertExists() } }
 
-    fun checkContainsText(text: String) =
+    fun assertContainsText(text: String) =
         apply {
             toNode {
                 nodeInteraction().assertTextContains(
