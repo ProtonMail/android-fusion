@@ -18,12 +18,11 @@
 
 package me.proton.fusion.utils
 
-import android.os.Environment
+
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import me.proton.fusion.FusionConfig
 import me.proton.fusion.FusionConfig.fusionTag
-import me.proton.fusion.FusionTest.Companion.testName
 import org.junit.runner.Description
 import java.io.File
 
@@ -40,13 +39,6 @@ object Shell {
         InstrumentationRegistry.getInstrumentation().targetContext.getExternalFilesDir(null)
             ?.resolve(FusionConfig.targetContext().packageName)
             ?.resolve("artifacts")
-//
-//    init {
-//        // Prepare artifacts directory
-//        automation.executeShellCommand("rm -rf $artifactsLocation")
-//        automation.waitForIdle(500, 1000)
-//        automation.executeShellCommand("mkdir -p $screenshotLocation")
-//    }
 
     /**
      * Sets up device in ready for automation mode.
@@ -95,11 +87,11 @@ object Shell {
     /**
      * Takes screenshot and saves to /sdcard/screenshots.
      */
-    fun takeScreenshot() {
-        val screenshotFileName = "$screenshotLocation/${testName.methodName}.png"
+    fun takeScreenshot(fileName: String) {
+        val screenshotFileName = "$screenshotLocation/$fileName.png"
         Log.d(
             fusionTag,
-            "Test \"${testName.methodName}\" failed. Saving screenshot to $screenshotFileName"
+            "Test \"$fileName\" failed. Saving screenshot to $screenshotFileName"
         )
         automation.executeShellCommand("screencap -p $screenshotFileName")
     }
