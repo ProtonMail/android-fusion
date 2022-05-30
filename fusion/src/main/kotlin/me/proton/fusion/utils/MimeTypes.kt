@@ -1,7 +1,7 @@
 package me.proton.fusion.utils
 
 /**
- * Keeps multiple MIME types to test intents.
+ * Contains multiple MIME types to test intents.
  */
 object MimeTypes {
 
