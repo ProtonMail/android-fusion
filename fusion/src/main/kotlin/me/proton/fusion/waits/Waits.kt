@@ -1,6 +1,5 @@
 package me.proton.fusion.waits
 
-import android.util.Log
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.RecyclerView
@@ -13,11 +12,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
-import me.proton.fusion.FusionConfig
 import me.proton.fusion.FusionConfig.commandTimeout
-import me.proton.fusion.FusionTest
 import me.proton.fusion.utils.ActivityProvider.currentActivity
-import me.proton.fusion.utils.Shell
 import org.hamcrest.Matcher
 
 /**
@@ -71,7 +67,7 @@ object Waits : ConditionWatcher {
             try {
                 val rv = currentActivity!!.findViewById<RecyclerView>(id)
                 if (rv != null) {
-                    waitUntilLoaded { rv }
+                    waitForRVPendingUpdatesToFinish { rv }
                     rv.adapter!!.itemCount > 0
                 }
             } catch (e: Throwable) {
@@ -86,7 +82,7 @@ object Waits : ConditionWatcher {
      * Passed [recyclerProvider] will be activated in UI thread, allowing you to retrieve the View.
      * Workaround for https://issuetracker.google.com/issues/123653014.
      */
-    inline fun waitUntilLoaded(crossinline recyclerProvider: () -> RecyclerView) {
+    inline fun waitForRVPendingUpdatesToFinish(crossinline recyclerProvider: () -> RecyclerView) {
         Espresso.onIdle()
         lateinit var recycler: RecyclerView
 
@@ -115,11 +111,11 @@ object Waits : ConditionWatcher {
                 }
             }
         }.onFailure {
-            Log.d(
-                FusionConfig.fusionTag,
-                "Test \"${FusionTest.testName.methodName}\" failed. Saving screenshot"
-            )
-            Shell.takeScreenshot()
+//            Log.d(
+//                FusionConfig.fusionTag,
+//                "Test \"${FusionTest.testName.methodName}\" failed. Saving screenshot"
+//            )
+//            Shell.takeScreenshot()
             throw it
         }
     }

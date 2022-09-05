@@ -22,7 +22,6 @@ import android.util.Log
 import me.proton.fusion.FusionConfig
 import me.proton.fusion.FusionConfig.commandTimeout
 import me.proton.fusion.FusionConfig.fusionTag
-import me.proton.fusion.FusionTest.Companion.testName
 import me.proton.fusion.utils.Shell
 import java.util.concurrent.TimeoutException
 
@@ -56,7 +55,7 @@ interface ConditionWatcher {
             }
             Thread.sleep(watchInterval)
         }
-        Shell.takeScreenshot()
+        //Shell.takeScreenshot()
         throw throwable
     }
 
@@ -83,8 +82,8 @@ interface ConditionWatcher {
             timeInterval += watchInterval
             Thread.sleep(watchInterval)
         }
-        Log.d(FusionConfig.fusionTag, "Test \"${testName.methodName}\" failed. Saving screenshot")
-        Shell.takeScreenshot()
+        //Log.d(FusionConfig.fusionTag, "Test \"${testName.methodName}\" failed. Saving screenshot")
+        //Shell.takeScreenshot()
         throw throwable
     }
 

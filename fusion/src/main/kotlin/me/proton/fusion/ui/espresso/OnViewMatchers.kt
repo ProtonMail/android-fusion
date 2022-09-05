@@ -19,19 +19,20 @@ import java.util.ArrayList
 @Suppress("UNCHECKED_CAST")
 open class OnViewMatchers<T> {
 
+    private val matchers: ArrayList<Matcher<View>> = ArrayList<Matcher<View>>()
+    private val rootMatchers: ArrayList<Matcher<Root>> = ArrayList<Matcher<Root>>()
     protected var defaultTimeout: Long = FusionConfig.commandTimeout
-    private val matchers: ArrayList<Matcher<View>>
-        get() = arrayListOf()
-    private val rootMatchers: ArrayList<Matcher<Root>>
-        get() = arrayListOf()
 
-    fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
+    fun withTimeout(milliseconds: Long): T {
+        defaultTimeout = milliseconds
+        return this as T
+    }
 
     /** Final [Matcher] for the view. **/
     fun viewMatcher(): Matcher<View> = AllOf.allOf(matchers)
 
     /** Final [Matcher] for the root. **/
-    fun rootMatcher(): Matcher<Root> =
+    internal fun rootMatcher(): Matcher<Root> =
         if (rootMatchers.isEmpty()) RootMatchers.DEFAULT else AllOf.allOf(rootMatchers)
 
     fun instanceOf(clazz: Class<*>?): T {

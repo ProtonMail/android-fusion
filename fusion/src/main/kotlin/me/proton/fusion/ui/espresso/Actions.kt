@@ -21,24 +21,25 @@ package me.proton.fusion.ui.espresso
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
+import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.core.view.children
 import androidx.core.view.descendants
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
-import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.*
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.platform.app.InstrumentationRegistry
+import junit.framework.Assert.fail
+import me.proton.fusion.utils.ActivityProvider
+import me.proton.fusion.waits.ConditionWatcher
 import org.junit.Assert
 import org.hamcrest.Matcher
 
 /**
  * Set of custom [ViewAction]s.
  */
-object Actions {
+object Actions : ConditionWatcher {
 
     fun setNumberPickerValue(num: Int): ViewAction {
         return object : ViewAction {
