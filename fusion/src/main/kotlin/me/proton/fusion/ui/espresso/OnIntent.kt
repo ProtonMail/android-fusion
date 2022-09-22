@@ -40,10 +40,7 @@ import org.hamcrest.core.AllOf
  */
 class OnIntent : ConditionWatcher {
 
-    private val matchers = mutableListOf(
-        IntentMatchers.anyIntent(),
-        IntentMatchers.isInternal()
-    )
+    private val matchers = mutableListOf<Matcher<Intent>>()
     private var defaultTimeout: Long = FusionConfig.commandTimeout
 
     fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }

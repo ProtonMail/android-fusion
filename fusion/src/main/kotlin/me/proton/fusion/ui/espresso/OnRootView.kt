@@ -62,7 +62,6 @@ class OnRootView {
         matchers.add(matcher)
     }
 
-    // Can be used to locate toast view.
     fun withNotCurrentActivityDecorView() = apply {
         matchers.add(RootMatchers.withDecorView(notCurrentActivityWindow))
     }

@@ -20,13 +20,13 @@ package me.proton.fusion.ui.espresso
 
 import androidx.test.espresso.DataInteraction
 import androidx.test.espresso.Espresso.onData
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import me.proton.fusion.FusionConfig
-import me.proton.fusion.ui.uiautomator.UiSelectorObject
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import me.proton.fusion.waits.ConditionWatcher
@@ -37,8 +37,6 @@ import org.hamcrest.CoreMatchers.anything
  */
 class OnListView {
 
-    private var dataMatcher: Matcher<out Any?>? = null
-
     fun onListItem(dataMatcher: Matcher<out Any?>): Builder {
         return Builder(dataMatcher)
     }
@@ -48,92 +46,120 @@ class OnListView {
     }
 
     class Builder(private val dataMatcher: Matcher<out Any?>) : ConditionWatcher {
+
+        private var dataInteraction: DataInteraction = onData(dataMatcher)
         private var defaultTimeout: Long = FusionConfig.commandTimeout
+        private var adapterView: OnView? = null
+        private var rootView: OnRootView? = null
+        private var childView: OnView? = null
+        private var position: Int? = null
 
         fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
 
         /** [DataInteraction] matcher functions. **/
         fun atPosition(position: Int) = apply {
-            dataInteraction().atPosition(position)
+            this.position = position
         }
 
         fun inAdapterView(adapterView: OnView) = apply {
-            dataInteraction().inAdapterView(adapterView.viewMatcher())
+            this.adapterView = adapterView
         }
 
         fun inRoot(rootView: OnRootView) = apply {
-            dataInteraction().inRoot(rootView.matcher())
+            this.rootView = rootView
         }
 
         fun onChild(childView: OnView) = apply {
-            dataInteraction().onChildView(childView.viewMatcher())
+            this.childView = childView
         }
 
         /** [DataInteraction] actions wrappers. **/
         fun click() = apply {
-            dataInteraction().perform(ViewActions.click())
+            waitForCondition(defaultTimeout) { interaction().perform(ViewActions.click()) }
         }
 
         fun longClick() = apply {
-            dataInteraction().perform(ViewActions.longClick())
+            waitForCondition(defaultTimeout) { interaction().perform(ViewActions.longClick()) }
         }
 
         fun replaceText(text: String) = apply {
-            dataInteraction().perform(
-                ViewActions.replaceText(text),
-                ViewActions.closeSoftKeyboard()
-            )
+            waitForCondition(defaultTimeout) {
+                interaction().perform(
+                    ViewActions.replaceText(text),
+                    ViewActions.closeSoftKeyboard()
+                )
+            }
         }
 
         fun swipeRight() = apply {
-            dataInteraction().perform(ViewActions.swipeRight())
+            waitForCondition(defaultTimeout) { interaction().perform(ViewActions.swipeRight()) }
         }
 
         fun swipeLeft() = apply {
-            dataInteraction().perform(ViewActions.swipeLeft())
+            waitForCondition(defaultTimeout) { interaction().perform(ViewActions.swipeLeft()) }
         }
 
         fun swipeDown() = apply {
-            dataInteraction().perform(ViewActions.swipeDown())
+            waitForCondition(defaultTimeout) { interaction().perform(ViewActions.swipeDown()) }
         }
 
         fun swipeUp() = apply {
-            dataInteraction().perform(ViewActions.swipeUp())
+            waitForCondition(defaultTimeout) { interaction().perform(ViewActions.swipeUp()) }
         }
 
         fun scrollTo() = apply {
-            dataInteraction().perform(ViewActions.scrollTo())
+            waitForCondition(defaultTimeout) { interaction().perform(ViewActions.scrollTo()) }
         }
 
         fun typeText(text: String) = apply {
-            dataInteraction().perform(ViewActions.typeText(text), ViewActions.closeSoftKeyboard())
+            waitForCondition(defaultTimeout) {
+                interaction().perform(
+                    ViewActions.typeText(text),
+                    ViewActions.closeSoftKeyboard()
+                )
+            }
         }
 
         /** [DataInteraction] assertions wrappers. **/
         fun checkContains(text: String) = apply {
-            dataInteraction(matches(ViewMatchers.withText(CoreMatchers.containsString(text))))
+            check(matches(ViewMatchers.withText(CoreMatchers.containsString(text))))
         }
 
         fun checkDoesNotExist() = apply {
-            dataInteraction(ViewAssertions.doesNotExist())
+            check(ViewAssertions.doesNotExist())
         }
 
-        fun checkDisabled() = apply {
-            dataInteraction(matches(CoreMatchers.not(ViewMatchers.isEnabled())))
+        fun checkIsDisabled() = apply {
+            check(matches(CoreMatchers.not(ViewMatchers.isEnabled())))
         }
 
-        fun checkDisplayed() = apply {
-            dataInteraction(matches(ViewMatchers.isDisplayed()))
+        fun checkIsDisplayed() = apply {
+            check(matches(ViewMatchers.isDisplayed()))
         }
 
-        fun checkNotDisplayed() = apply {
-            dataInteraction(matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
+        fun checkIsNotDisplayed() = apply {
+            check(matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
         }
 
         /** Builds [DataInteraction] based on parameters provided to [OnListView.Builder]. **/
-        private fun dataInteraction(viewAssertion: ViewAssertion = matches(ViewMatchers.isDisplayed())): DataInteraction {
-            waitForCondition(defaultTimeout) { onData(dataMatcher).check(viewAssertion) }
-            return onData(dataMatcher)
+        private fun check(viewAssertion: ViewAssertion) {
+            waitForCondition(defaultTimeout) { interaction().check(viewAssertion) }
+        }
+
+        private fun interaction(): DataInteraction {
+            if (adapterView != null) {
+                dataInteraction = dataInteraction.inAdapterView(adapterView!!.viewMatcher())
+            }
+            if (rootView != null) {
+                dataInteraction = dataInteraction.inRoot(rootView!!.matcher())
+            }
+            if (position != null) {
+                dataInteraction = dataInteraction.atPosition(position)
+            }
+            if (childView != null) {
+                dataInteraction = dataInteraction.onChildView(childView!!.viewMatcher())
+            }
+            return dataInteraction
         }
     }
 }

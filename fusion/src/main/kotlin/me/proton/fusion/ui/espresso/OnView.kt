@@ -29,8 +29,9 @@ import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.matcher.ViewMatchers
-import me.proton.fusion.waits.ConditionWatcher
+import me.proton.fusion.ui.espresso.Assertions.exists
 import me.proton.fusion.utils.StringUtils.stringFromResource
+import me.proton.fusion.waits.ConditionWatcher
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
@@ -40,6 +41,8 @@ import org.hamcrest.TypeSafeMatcher
  */
 class OnView : ConditionWatcher, OnViewMatchers<OnView>() {
     private var viewInteraction: ViewInteraction? = null
+
+    // Used to tag the assertion to prevent unnecessary assertions on the same view.
     private var assertionHash = 0
 
     /** [ViewInteraction] wait. **/
@@ -138,10 +141,26 @@ class OnView : ConditionWatcher, OnViewMatchers<OnView>() {
     }
 
     fun scrollTo() = apply {
-        waitForViewInteraction().perform(ViewActions.scrollTo())
+        waitForViewInteraction(exists(viewMatcher())).perform(ViewActions.scrollTo())
     }
 
     /** Assertion wrappers **/
+    fun checkContainsText(text: String) = apply {
+        viewInteraction(matches(ViewMatchers.withText(CoreMatchers.containsString(text))))
+    }
+
+    fun checkContainsText(@StringRes textId: Int) = apply {
+        viewInteraction(matches(ViewMatchers.withText(stringFromResource(textId))))
+    }
+
+    fun checkDoesNotExist() = apply {
+        viewInteraction(doesNotExist())
+    }
+
+    fun checkExists() = apply {
+        viewInteraction(exists(viewMatcher()))
+    }
+
     fun checkIsChecked() = apply {
         viewInteraction(matches(ViewMatchers.isChecked()))
     }
@@ -158,11 +177,15 @@ class OnView : ConditionWatcher, OnViewMatchers<OnView>() {
         viewInteraction(matches(ViewMatchers.isDisplayed()))
     }
 
+    fun checkIsNotDisplayed() = apply {
+        viewInteraction(matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
+    }
+
     fun checkIsDisabled() = apply {
         viewInteraction(matches(CoreMatchers.not(ViewMatchers.isEnabled())))
     }
 
-    fun checkEnabled() = apply {
+    fun checkIsEnabled() = apply {
         viewInteraction(matches(ViewMatchers.isEnabled()))
     }
 
@@ -172,18 +195,6 @@ class OnView : ConditionWatcher, OnViewMatchers<OnView>() {
 
     fun checkIsNotSelected() = apply {
         viewInteraction(matches(ViewMatchers.isNotSelected()))
-    }
-
-    fun checkContainsText(text: String) = apply {
-        viewInteraction(matches(ViewMatchers.withText(CoreMatchers.containsString(text))))
-    }
-
-    fun checkContainsText(@StringRes textId: Int) = apply {
-        viewInteraction(matches(ViewMatchers.withText(stringFromResource(textId))))
-    }
-
-    fun checkDoesNotExist() = apply {
-        viewInteraction(doesNotExist())
     }
 
     fun checkLengthEquals(length: Int) = apply {
@@ -200,15 +211,14 @@ class OnView : ConditionWatcher, OnViewMatchers<OnView>() {
         )
     }
 
-    fun checkIsNotDisplayed() = apply {
-        waitForViewInteraction(matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
-    }
-
     fun waitUntilGone() = apply { waitForViewInteraction(doesNotExist()) }
-
 
     fun waitForDisplayed() = apply {
         waitForViewInteraction(matches(ViewMatchers.isDisplayed()))
+    }
+
+    fun waitForNotDisplayed() = apply {
+        waitForViewInteraction(matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
     }
 
     fun waitForDisabled() = apply {
