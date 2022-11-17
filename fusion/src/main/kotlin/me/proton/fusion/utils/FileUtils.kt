@@ -42,7 +42,7 @@ object FileUtils {
      */
     fun deleteDownloadArtifactsFolder() {
         val downloadArtifactsPath =
-            FusionConfig.targetContext().getExternalFilesDir(null)!!.absolutePath
+            FusionConfig.targetContext.getExternalFilesDir(null)!!.absolutePath
         automation.executeShellCommand("rm -rf $downloadArtifactsPath")
     }
 
@@ -69,7 +69,7 @@ object FileUtils {
      */
     fun copyAssetFileToInternalFilesStorage(fileName: String) {
         val testContext = InstrumentationRegistry.getInstrumentation().context
-        val file = File("${FusionConfig.targetContext().filesDir.path}/$fileName")
+        val file = File("${FusionConfig.targetContext.filesDir.path}/$fileName")
 
         if (!file.exists()) {
             try {
@@ -90,7 +90,7 @@ object FileUtils {
 
         // Declare variables for test and application context.
         val testContext = InstrumentationRegistry.getInstrumentation().context
-        val file = File("${FusionConfig.targetContext().cacheDir}/$fileName")
+        val file = File("${FusionConfig.targetContext.cacheDir}/$fileName")
 
         if (!file.exists()) {
             try {

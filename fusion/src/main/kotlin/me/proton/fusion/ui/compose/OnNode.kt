@@ -1,294 +1,248 @@
-/*
- * Copyright (c) 2021 Proton Technologies AG
- * This file is part of Proton Technologies AG and ProtonCore.
- *
- * ProtonCore is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * ProtonCore is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with ProtonCore.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.proton.fusion.ui.compose
 
-import android.util.Log
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.semantics.AccessibilityAction
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.test.*
-import me.proton.fusion.FusionConfig.fusionTag
-import me.proton.fusion.FusionConfig
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.TouchInjectionScope
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertContentDescriptionContains
+import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertHasNoClickAction
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotFocused
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertIsSelectable
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertIsToggleable
+import androidx.compose.ui.test.assertRangeInfoEquals
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performKeyPress
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeRight
+import androidx.compose.ui.test.swipeUp
+import me.proton.fusion.FusionConfig.Compose
+import me.proton.fusion.ui.api.FusionActionable
+import me.proton.fusion.ui.api.enums.SwipeDirection
 
-/**
- * Contains identifiers, actions, and checks to find a single semantics node
- * that matches the given condition i.e. [SemanticsNodeInteraction].
- */
 open class OnNode(
-    private val interaction: SemanticsNodeInteraction? = null,
-) : NodeBuilder<OnNode>() {
+    private val useUnmergedTree: Boolean = true,
+    private val overrideInteraction: SemanticsNodeInteraction? = null,
+    override val shouldPrintToLog: Boolean = Compose.shouldPrintToLog.get(),
+    override val shouldPrintHierarchyOnFailure: Boolean = Compose.shouldPrintHierarchyOnFailure.get(),
+) : ComposeSelectable<OnNode>,
+    FusionActionable<SemanticsNodeInteraction> {
+    override val interaction
+        get() = overrideInteraction ?: composeTestRule.onNode(
+            matchers.final,
+            useUnmergedTree
+        )
 
-    internal fun nodeInteraction(shouldNotExist: Boolean = false): SemanticsNodeInteraction {
-        return if (interaction != null) {
-            // If interaction is not null then the node was given in constructor.
-            interaction
-        } else {
-            val newInteraction = FusionConfig.compose.testRule.onNode(
-                semanticMatcher(),
-                shouldUseUnmergedTree
-            )
-            if (shouldNotExist) {
-                // Return interaction if shouldNotExist == true.
-                newInteraction
-            } else {
-                // Wait for element existence before acting on it.
-                FusionConfig.compose.testRule.waitUntil(defaultTimeout) { newInteraction.exists() }
-                newInteraction
+    override val matchers: ArrayList<SemanticsMatcher> = arrayListOf()
+
+    /** Actions **/
+    override fun click() =
+        waitFor {
+            interaction.performClick()
+        }
+
+    override fun scrollTo() =
+        waitFor {
+            interaction.performScrollTo()
+        }
+
+    override fun swipe(direction: SwipeDirection) =
+        waitFor {
+            interaction.performTouchInput {
+                when (direction) {
+                    SwipeDirection.Up -> swipeUp()
+                    SwipeDirection.Down -> swipeDown()
+                    SwipeDirection.Right -> swipeRight()
+                    SwipeDirection.Left -> swipeLeft()
+                }
             }
         }
-    }
 
-    private fun toNode(action: () -> SemanticsNodeInteraction) =
-        handlePrint {
-            if (FusionConfig.compose.shouldPrintToLog) action().printToLog(FusionConfig.fusionTag) else action()
+    override fun clearText() =
+        waitFor {
+            interaction.performTextClearance()
         }
 
-    /** Node actions **/
-    fun click() = apply { toNode { nodeInteraction().performClick() } }
-
-    fun performCustomAction(action: SemanticsPropertyKey<AccessibilityAction<() -> Boolean>>) =
-        apply {
-            toNode { nodeInteraction().apply { performSemanticsAction(action) } }
+    override fun typeText(text: String) =
+        waitFor {
+            interaction.performTextInput(text)
         }
 
-    fun scrollTo() = apply { toNode { nodeInteraction().performScrollTo() } }
+    override fun replaceText(text: String) =
+        waitFor {
+            interaction.performTextReplacement(text)
+        }
 
-    fun swipeDown() = apply { toNode { nodeInteraction().performTouchInput { swipeDown() } } }
+    override fun performImeAction() =
+        waitFor {
+            interaction.performImeAction()
+        }
 
-    fun swipeLeft() = apply { toNode { nodeInteraction().performTouchInput { swipeLeft() } } }
-
-    fun swipeRight() = apply { toNode { nodeInteraction().performTouchInput { swipeRight() } } }
-
-    fun swipeUp() = apply { toNode { nodeInteraction().performTouchInput { swipeUp() } } }
-
+    /** Compose specific actions **/
     fun sendGesture(block: TouchInjectionScope.() -> Unit) =
-        apply { toNode { nodeInteraction().performTouchInput(block) } }
-
-    fun clearText() = apply { toNode { nodeInteraction().apply { performTextClearance() } } }
-
-    fun typeText(text: String) =
-        apply { toNode { nodeInteraction().apply { performTextInput(text) } } }
-
-    fun replaceText(text: String) =
-        apply { toNode { nodeInteraction().apply { performTextReplacement(text) } } }
+        waitFor {
+            interaction.performTouchInput(block)
+        }
 
     fun pressKey(keyEvent: KeyEvent) =
-        apply { toNode { nodeInteraction().apply { performKeyPress(keyEvent) } } }
+        waitFor {
+            interaction.performKeyPress(keyEvent)
+        }
 
-    fun performImeAction() = apply { toNode { nodeInteraction().apply { performImeAction() } } }
+    fun performCustomAction(action: SemanticsPropertyKey<AccessibilityAction<() -> Boolean>>) =
+        waitFor {
+            interaction.performSemanticsAction(action)
+        }
 
     /** Node assertions **/
-    fun assertExists() = apply { toNode { nodeInteraction().assertExists() } }
-
-    fun assertContainsText(text: String) =
-        apply {
-            toNode {
-                nodeInteraction().assertTextContains(
-                    text,
-                    substring = true,
-                    ignoreCase = false
-                )
-            }
+    override fun assertExists() =
+        waitFor {
+            interaction.assertExists()
         }
 
-    fun assertDoesNotExist() = apply { nodeInteraction(shouldNotExist = true).assertDoesNotExist() }
-
-    fun assertIsDisplayed() = apply { toNode { nodeInteraction().assertIsDisplayed() } }
-
-    fun assertIsNotDisplayed() = apply { toNode { nodeInteraction().assertIsNotDisplayed() } }
-
-    fun assertEnabled() = apply { toNode { nodeInteraction().assertIsEnabled() } }
-
-    fun assertDisabled() = apply { toNode { nodeInteraction().assertIsNotEnabled() } }
-
-    fun assertIsChecked() = apply { toNode { nodeInteraction().assertIsOn() } }
-
-    fun assertIsNotChecked() = apply { toNode { nodeInteraction().assertIsOff() } }
-
-    fun assertIsSelected() = apply { toNode { nodeInteraction().assertIsSelected() } }
-
-    fun assertIsNotSelected() = apply { toNode { nodeInteraction().assertIsNotSelected() } }
-
-    fun assertIsCheckable() = apply { toNode { nodeInteraction().assertIsToggleable() } }
-
-    fun assertSelectable() = apply { toNode { nodeInteraction().assertIsSelectable() } }
-
-    fun assertIsFocused() = apply { toNode { nodeInteraction().assertIsFocused() } }
-
-    fun assertIsNotFocused() = apply { toNode { nodeInteraction().assertIsNotFocused() } }
-
-    fun assertContentDescEquals(value: String) =
-        apply { toNode { nodeInteraction().assertContentDescriptionEquals(value) } }
-
-    fun assertContentDescContains(text: String) =
-        apply {
-            toNode {
-                nodeInteraction().assertContentDescriptionContains(
-                    text,
-                    substring = false,
-                    ignoreCase = false
-                )
-            }
+    override fun assertContainsText(text: String) =
+        waitFor {
+            interaction.assertTextContains(
+                text,
+                substring = true,
+                ignoreCase = false
+            )
         }
 
-    fun assertContentDescContainsIgnoringCase(text: String) =
-        apply {
-            toNode {
-                nodeInteraction().assertContentDescriptionContains(
-                    text,
-                    substring = false,
-                    ignoreCase = true
-                )
-            }
+    override fun assertDoesNotExist() =
+        waitFor {
+            interaction.assertDoesNotExist()
         }
 
-    fun assertTextEquals(value: String) = apply {
-        toNode { nodeInteraction().assertTextEquals(value) }
-    }
-
-    fun assertProgressBar(range: ProgressBarRangeInfo) = apply {
-        toNode { nodeInteraction().assertRangeInfoEquals(range) }
-    }
-
-    fun assertClickable() = apply { toNode { nodeInteraction().assertHasClickAction() } }
-
-    fun assertIsNotClickable() = apply { toNode { nodeInteraction().assertHasNoClickAction() } }
-
-    fun assertMatches(matcher: SemanticsMatcher, messagePrefixOnError: (() -> String)?) = apply {
-        toNode { nodeInteraction().assert(matcher, messagePrefixOnError) }
-    }
-
-    /** Node selectors **/
-    fun onChildAt(position: Int) = OnNode(nodeInteraction().onChildAt(position))
-
-    fun onChild() = OnNode(nodeInteraction().onChild())
-
-    fun onChild(node: OnNode) =
-        OnNode(nodeInteraction().onChildren().filterToOne(node.semanticMatcher()))
-
-    fun onParent() = OnNode(nodeInteraction().onParent())
-
-    fun onSibling() = OnNode(nodeInteraction().onSibling())
-
-    fun onSibling(node: OnNode) =
-        OnNode(nodeInteraction().onSiblings().filterToOne(node.semanticMatcher()))
-
-    fun onChildren() = OnAllNodes(nodeInteraction().onChildren())
-
-    fun onSiblings() = OnAllNodes(nodeInteraction().onSiblings())
-
-    fun onAncestors() = OnAllNodes(nodeInteraction().onAncestors())
-
-    fun onAncestor(node: OnNode) =
-        OnNode(nodeInteraction().onAncestors().filterToOne(node.semanticMatcher()))
-
-    fun waitForDisplayed() = apply {
-        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
-            nodeInteraction().isDisplayed()
+    override fun assertIsDisplayed() =
+        waitFor {
+            interaction.assertIsDisplayed()
         }
-    }
 
-    fun waitForEnabled() = apply {
-        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
-            nodeInteraction().isEnabled()
+    override fun assertIsNotDisplayed() =
+        waitFor {
+            interaction.assertIsNotDisplayed()
         }
-    }
 
-    fun waitForDisabled() = apply {
-        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
-            nodeInteraction().isEnabled()
+    override fun assertEnabled() =
+        waitFor {
+            interaction.assertIsEnabled()
         }
-    }
 
-    fun waitForContainsText(text: String) = apply {
-        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
-            nodeInteraction().containsText(text)
+    override fun assertDisabled() =
+        waitFor {
+            interaction.assertIsNotEnabled()
         }
-    }
 
-    fun waitForSelected() = apply {
-        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
-            nodeInteraction().isSelected()
+    override fun assertIsChecked() =
+        waitFor {
+            interaction.assertIsOn()
         }
-    }
 
-    fun waitForNotSelected() = apply {
-        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
-            nodeInteraction().isNotSelected()
+    override fun assertIsNotChecked() =
+        waitFor {
+            interaction.assertIsOff()
         }
-    }
 
-    fun waitUntilGone() {
-        FusionConfig.compose.testRule.waitUntil(defaultTimeout) {
-            nodeInteraction(true).doesNotExist()
+    override fun assertIsSelected() =
+        waitFor {
+            interaction.assertIsSelected()
         }
-    }
 
-    /** Helpers **/
-    private fun SemanticsNodeInteraction.doesNotExist(): Boolean {
-        try {
-            this.assertDoesNotExist()
-        } catch (e: Exception) {
-            val firstLine = e.message?.split("\n")?.get(0)
-            Log.v(fusionTag, "Waiting for condition. Status: $firstLine")
-            return false
+    override fun assertIsNotSelected() =
+        waitFor {
+            interaction.assertIsNotSelected()
         }
-        return true
-    }
 
-    private fun SemanticsNodeInteraction.exists(): Boolean {
-        return assertion { this.assertExists() }
-    }
-
-    private fun SemanticsNodeInteraction.isDisplayed(): Boolean {
-        return assertion { this.assertIsDisplayed() }
-    }
-
-    private fun SemanticsNodeInteraction.isEnabled(): Boolean {
-        return assertion { this.assertIsEnabled() }
-    }
-
-    private fun SemanticsNodeInteraction.isSelected(): Boolean {
-        return assertion { this.assertIsSelected() }
-    }
-
-    private fun SemanticsNodeInteraction.isNotSelected(): Boolean {
-        return assertion { this.assertIsNotSelected() }
-    }
-
-    private fun SemanticsNodeInteraction.isDisabled(): Boolean {
-        return assertion { this.assertIsNotEnabled() }
-    }
-
-    private fun SemanticsNodeInteraction.containsText(text: String): Boolean {
-        return assertion { this.assertTextContains(text) }
-    }
-
-    private fun assertion(assertion: () -> SemanticsNodeInteraction): Boolean {
-        try {
-            assertion()
-        } catch (e: AssertionError) {
-            val firstLine = e.message?.split("\n")?.get(0)
-            Log.v(fusionTag, "Waiting for condition. Status: $firstLine")
-            return false
+    override fun assertIsCheckable() =
+        waitFor {
+            interaction.assertIsToggleable()
         }
-        return true
-    }
+
+    override fun assertSelectable() =
+        waitFor {
+            interaction.assertIsSelectable()
+        }
+
+    override fun assertIsFocused() =
+        waitFor {
+            interaction.assertIsFocused()
+        }
+
+    override fun assertIsNotFocused() =
+        waitFor {
+            interaction.assertIsNotFocused()
+        }
+
+    override fun assertContentDescEquals(value: String) =
+        waitFor {
+            interaction.assertContentDescriptionEquals(value)
+        }
+
+    override fun assertContentDescContains(text: String) =
+        waitFor {
+            interaction.assertContentDescriptionContains(
+                text,
+                substring = false,
+                ignoreCase = false
+            )
+        }
+
+    override fun assertContentDescContainsIgnoringCase(text: String) =
+        waitFor {
+            interaction.assertContentDescriptionContains(
+                text,
+                substring = false,
+                ignoreCase = true
+            )
+        }
+
+    override fun assertTextEquals(value: String) =
+        waitFor {
+            interaction.assertTextEquals(value)
+        }
+
+    override fun assertProgressBar(range: ProgressBarRangeInfo) =
+        waitFor {
+            interaction.assertRangeInfoEquals(range)
+        }
+
+    override fun assertClickable() =
+        waitFor {
+            interaction.assertHasClickAction()
+        }
+
+    override fun assertIsNotClickable() =
+        waitFor {
+            interaction.assertHasNoClickAction()
+        }
+
+    override fun assertMatches(matcher: SemanticsMatcher, messagePrefixOnError: String) =
+        waitFor {
+            interaction.assert(matcher) { messagePrefixOnError }
+        }
 }

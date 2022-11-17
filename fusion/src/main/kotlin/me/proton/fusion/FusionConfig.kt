@@ -18,14 +18,16 @@
 
 package me.proton.fusion
 
-import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 
-/**
- *
- */
+typealias AndroidComposeRule = AndroidComposeTestRule<ActivityScenarioRule<*>, *>
+
 object FusionConfig {
 
     val compose = Compose
@@ -33,16 +35,16 @@ object FusionConfig {
     val testRule = TestRule
     var fusionTag: String = "FUSION"
     var commandTimeout: Long = 10_000L
-    fun targetContext() = InstrumentationRegistry.getInstrumentation().targetContext!!
+    val targetContext get() = InstrumentationRegistry.getInstrumentation().targetContext!!
 
     object TestRule {
         var retriesCount: Int = 1
     }
 
     object Compose {
-        lateinit var testRule: ComposeTestRule
-        var shouldPrintHierarchyOnFailure: Boolean = false
-        var shouldPrintToLog: Boolean = false
+        val testRule: AtomicReference<AndroidComposeRule> = AtomicReference<AndroidComposeRule>()
+        val shouldPrintHierarchyOnFailure: AtomicBoolean = AtomicBoolean(false)
+        val shouldPrintToLog: AtomicBoolean = AtomicBoolean(false)
     }
 
     object UiAutomator {
@@ -62,7 +64,7 @@ object FusionConfig {
         var shouldSearchByObjectEachAction: Boolean = false
         var shouldSearchUiObjectEachAction: Boolean = false
 
-        var timeout: Long = 10_000L
+        val defaultTimeout: Long = 10_000L
 
         fun boost() {
             config.waitForIdleTimeout = 0

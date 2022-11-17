@@ -37,7 +37,7 @@ object Shell {
             ?.resolve("Screenshots")
     private val artifactsLocation =
         InstrumentationRegistry.getInstrumentation().targetContext.getExternalFilesDir(null)
-            ?.resolve(FusionConfig.targetContext().packageName)
+            ?.resolve(FusionConfig.targetContext.packageName)
             ?.resolve("artifacts")
 
     /**
@@ -62,7 +62,7 @@ object Shell {
             .executeShellCommand(
                 "am start -a android.intent.action.SEND -t $mimeType " +
                         "--eu android.intent.extra.STREAM " +
-                        "file:///data/data/${FusionConfig.targetContext().packageName}/files/$fileName " +
+                        "file:///data/data/${FusionConfig.targetContext.packageName}/files/$fileName " +
                         " --grant-read-uri-permission"
             )
     }
@@ -80,7 +80,7 @@ object Shell {
     fun saveToFile(description: Description?) {
         val logcatFile = File(artifactsLocation, "${description?.methodName}-logcat.txt")
         automation.executeShellCommand(
-            "run-as ${FusionConfig.targetContext().packageName} -d -f $logcatFile"
+            "run-as ${FusionConfig.targetContext.packageName} -d -f $logcatFile"
         )
     }
 

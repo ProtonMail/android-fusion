@@ -20,7 +20,7 @@ package me.proton.fusion.utils
 
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
-import me.proton.fusion.FusionConfig
+import me.proton.fusion.FusionConfig.targetContext
 
 /**
  * Contains functions that return string resource by its id using target app context.
@@ -29,13 +29,13 @@ object StringUtils {
 
     fun stringFromResource(@StringRes id: Int, vararg formatArgs: Any): String =
         if (formatArgs.isEmpty()) {
-            FusionConfig.targetContext().resources.getString(id)
+            targetContext.resources.getString(id)
         } else {
-            FusionConfig.targetContext().resources.getString(id, *formatArgs)
+            targetContext.resources.getString(id, *formatArgs)
         }
 
     fun stringFromResource(@StringRes id: Int): String =
-        FusionConfig.targetContext().resources.getString(id)
+        targetContext.resources.getString(id)
 
     fun pluralStringFromResource(
         @PluralsRes id: Int,
@@ -43,8 +43,8 @@ object StringUtils {
         vararg formatArgs: Any
     ): String =
         if (formatArgs.isEmpty()) {
-            FusionConfig.targetContext().resources.getQuantityString(id, quantity)
+            targetContext.resources.getQuantityString(id, quantity)
         } else {
-            FusionConfig.targetContext().resources.getQuantityString(id, quantity, *formatArgs)
+            targetContext.resources.getQuantityString(id, quantity, *formatArgs)
         }
 }
