@@ -18,13 +18,12 @@
 
 package me.proton.fusion.waits
 
-import android.util.Log
-import me.proton.fusion.FusionConfig
 import me.proton.fusion.FusionConfig.commandTimeout
-import me.proton.fusion.FusionConfig.fusionTag
-import me.proton.fusion.utils.Shell
+import kotlin.time.Duration
 import java.util.concurrent.TimeoutException
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 interface ConditionWatcher {
 
     /**
@@ -32,59 +31,15 @@ interface ConditionWatcher {
      * @throws Exception which was last caught during condition check after given [watchTimeout] ms
      */
     fun waitForCondition(
-        watchTimeout: Long = commandTimeout,
+        watchTimeout: Duration = commandTimeout,
         watchInterval: Long = 250L,
         conditionBlock: () -> Unit
     ) {
         var throwable: Throwable =
             TimeoutException("Condition was not met in $watchTimeout ms. No exceptions caught.")
-        var currentTimestamp = System.currentTimeMillis()
-        val timeoutTimestamp = currentTimestamp + watchTimeout
+        var currentTimestamp =  System.currentTimeMillis()
 
-        while (currentTimestamp < timeoutTimestamp) {
-            currentTimestamp = System.currentTimeMillis()
-            try {
-                return conditionBlock()
-            } catch (e: Throwable) {
-                val firstLine = e.message?.split("\n")?.get(0)
-                Log.v(
-                    fusionTag,
-                    "Waiting for condition. ${timeoutTimestamp - currentTimestamp}ms remaining. Status: $firstLine"
-                )
-                throwable = e
-            }
-            Thread.sleep(watchInterval)
-        }
         //Shell.takeScreenshot()
         throw throwable
     }
-
-    fun waitForBoolCondition(
-        watchTimeout: Long = commandTimeout,
-        watchInterval: Long = 250L,
-        conditionBlock: () -> Boolean
-    ) {
-        var timeInterval = 0L
-        var throwable: Throwable =
-            TimeoutException("Condition was not met in $watchTimeout ms. No exceptions caught.")
-
-        while (timeInterval < watchTimeout) {
-            try {
-                if (conditionBlock()) return
-            } catch (e: Throwable) {
-                val firstLine = e.message?.split("\n")?.get(0)
-                Log.v(
-                    FusionConfig.fusionTag,
-                    "Waiting for condition. ${watchTimeout - timeInterval}ms remaining. Status: $firstLine"
-                )
-                throwable = e
-            }
-            timeInterval += watchInterval
-            Thread.sleep(watchInterval)
-        }
-        //Log.d(FusionConfig.fusionTag, "Test \"${testName.methodName}\" failed. Saving screenshot")
-        //Shell.takeScreenshot()
-        throw throwable
-    }
-
 }

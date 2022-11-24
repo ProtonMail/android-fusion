@@ -15,11 +15,14 @@ import kotlinx.coroutines.withTimeoutOrNull
 import me.proton.fusion.FusionConfig.commandTimeout
 import me.proton.fusion.utils.ActivityProvider.currentActivity
 import org.hamcrest.Matcher
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 /**
  * Contains wait functions and retry actions.
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
+@OptIn(ExperimentalTime::class)
 object Waits : ConditionWatcher {
 
     /**
@@ -31,7 +34,7 @@ object Waits : ConditionWatcher {
     fun performActionWithRetry(
         interaction: ViewInteraction,
         action: ViewAction,
-        timeout: Long = commandTimeout
+        timeout: Duration = commandTimeout
     ): ViewInteraction {
         waitForCondition(timeout) { interaction.perform(action) }
         return interaction
@@ -50,7 +53,7 @@ object Waits : ConditionWatcher {
         assertion: ViewAssertion,
         matcher: Matcher<View>,
         action: ViewAction,
-        timeout: Long = commandTimeout
+        timeout: Duration = commandTimeout
     ): ViewInteraction {
         waitForCondition(timeout) {
             interaction.perform(action)
@@ -60,7 +63,7 @@ object Waits : ConditionWatcher {
         return interaction
     }
 
-    fun waitUntilRecyclerViewPopulated(@IdRes id: Int, timeout: Long = commandTimeout) {
+    fun waitUntilRecyclerViewPopulated(@IdRes id: Int, timeout: Duration = commandTimeout) {
         val timedOutResources = ArrayList<String>()
 
         waitForCondition(timeout) {
@@ -97,10 +100,11 @@ object Waits : ConditionWatcher {
 
     /**
      * Waits until [conditionBlock] is true.
+     * Waits until [conditionBlock] is true.
      * @throws Exception which was last caught during condition check after given [watchTimeout] ms.
      */
     fun waitUntil(
-        watchTimeout: Long = commandTimeout,
+        watchTimeout: Duration = commandTimeout,
         watchInterval: Long = 250L,
         conditionBlock: () -> Boolean,
     ) = runBlocking {

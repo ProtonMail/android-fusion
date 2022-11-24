@@ -3,11 +3,29 @@ import org.jetbrains.kotlin.gradle.plugin.statistics.ReportStatisticsToElasticSe
 plugins {
     id ("com.android.library")
     kotlin("android")
+    signing
     id("com.vanniktech.maven.publish")
+}
+
+tasks.withType<Sign>().configureEach {
+    onlyIf { false }
+}
+
+tasks.register<Zip>("stuffZip") {
+    archiveBaseName.set("stuff")
+    from("src/stuff")
 }
 
 android {
     compileSdk = 31
+
+    signing {
+        val signingKeyId: String? by project
+        val signingKey: String? by project
+        val signingPassword: String? by project
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign(tasks["stuffZip"])
+    }
 
     defaultConfig {
         minSdk = 23

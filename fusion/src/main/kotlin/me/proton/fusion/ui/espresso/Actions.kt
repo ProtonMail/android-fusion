@@ -30,8 +30,6 @@ import androidx.test.espresso.*
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.platform.app.InstrumentationRegistry
-import junit.framework.Assert.fail
-import me.proton.fusion.utils.ActivityProvider
 import me.proton.fusion.waits.ConditionWatcher
 import org.junit.Assert
 import org.hamcrest.Matcher

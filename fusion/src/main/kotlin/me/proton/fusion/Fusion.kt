@@ -19,7 +19,8 @@
 
 package me.proton.fusion
 
-import me.proton.fusion.ui.compose.OnAllNodes
+import me.proton.fusion.ui.compose.NodeMatchers
+import me.proton.fusion.ui.compose.OnNodes
 import me.proton.fusion.ui.compose.OnNode
 import me.proton.fusion.ui.device.OnDevice
 import me.proton.fusion.ui.espresso.OnIntent
@@ -35,7 +36,7 @@ import me.proton.fusion.utils.Shell
 /**
  * An entry point to Fusion API.
  */
-interface Fusion {
+object Fusion {
 
     val fusionConfig: FusionConfig
         get() = FusionConfig
@@ -45,7 +46,6 @@ interface Fusion {
      */
     val uiObject: UiSelectorObject
         get() = UiSelectorObject()
-
 
     /**
      *  UiAutomator with BySelector.
@@ -77,11 +77,12 @@ interface Fusion {
     /**
      * ComposeUiTest.
      */
-    val node: OnNode
+
+    val node: NodeMatchers<OnNode>
         get() = OnNode()
 
-    val allNodes: OnAllNodes
-        get() = OnAllNodes()
+    val allNodes: NodeMatchers<OnNodes>
+        get() = OnNodes()
 
     /**
      * System.

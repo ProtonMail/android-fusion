@@ -33,11 +33,14 @@ import androidx.test.espresso.matcher.ViewMatchers
 import me.proton.fusion.waits.ConditionWatcher
 import me.proton.fusion.ui.espresso.Actions.clickOnMatchedDescendant
 import org.hamcrest.Matcher
+import kotlin.time.ExperimentalTime
 
 /**
  * Builder like class that simplifies syntax for actions and verifications on
  * [RecyclerView.ViewHolder].
  */
+
+@OptIn(ExperimentalTime::class)
 class OnRecyclerView : ConditionWatcher, OnViewMatchers<OnRecyclerView>() {
     private var position: Int? = null
     private var viewHolderMatcher: Matcher<RecyclerView.ViewHolder>? = null

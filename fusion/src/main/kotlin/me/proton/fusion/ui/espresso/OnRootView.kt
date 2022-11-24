@@ -31,8 +31,6 @@ import java.util.ArrayList
  */
 class OnRootView {
     private val matchers = ArrayList<Matcher<Root>>()
-    private val notCurrentActivityWindow =
-        CoreMatchers.not(ActivityProvider.currentActivity!!.window.decorView)
 
     fun isPlatformPopUp() = apply {
         matchers.add(RootMatchers.isPlatformPopup())
@@ -63,9 +61,11 @@ class OnRootView {
     }
 
     fun withNotCurrentActivityDecorView() = apply {
+        val notCurrentActivityWindow =
+            CoreMatchers.not(ActivityProvider.currentActivity!!.window.decorView)
         matchers.add(RootMatchers.withDecorView(notCurrentActivityWindow))
     }
 
     /** Matcher function should be used when we would like to point which [Root] we wanna operate on. **/
-    internal fun matcher(): Matcher<Root> = AllOf.allOf(matchers)
+    val finalMatcher: Matcher<Root> get() = AllOf.allOf(matchers)
 }

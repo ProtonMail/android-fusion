@@ -26,10 +26,13 @@ import org.hamcrest.MatcherAssert
 import androidx.test.uiautomator.UiObject2
 import me.proton.fusion.FusionConfig
 import org.hamcrest.CoreMatchers.*
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 /**
  * Class that wraps interactions for [UiObject2] element.
  */
+@OptIn(ExperimentalTime::class)
 open class ByObject() : BySelectorGenerator<ByObject>() {
 
     constructor(newObject: UiObject2, newSelector: BySelector) : this() {
@@ -45,11 +48,11 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
     private var givenObjectSelector: BySelector? = null
     private var locatedObject: UiObject2? = null
     private var objectSelectorHash: Int? = null
-    private var defaultTimeout: Long = FusionConfig.commandTimeout
+    private var defaultTimeout: Duration = FusionConfig.commandTimeout
     protected var locatedObjects: List<UiObject2>? = null
     protected var objectPosition: Int? = null
 
-    fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
+    fun withTimeout(milliseconds: Duration) = apply { defaultTimeout = milliseconds }
 
     /** [UiObject] properties. **/
     fun childCount(): Int = uiObject2().childCount
@@ -219,9 +222,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
     /**
      * Waits.
      */
-    fun waitForExists(timeout: Long = defaultTimeout) = apply {
+    fun waitForExists(timeout: Duration = defaultTimeout) = apply {
         val selector = objectSelector
-        val byObject = device.wait(Until.findObject(selector), timeout)
+        val byObject = device.wait(Until.findObject(selector), timeout.inWholeMilliseconds)
         MatcherAssert.assertThat(
             "Expected object with selector: $selector to EXIST but it DOES NOT.",
             byObject,
@@ -229,7 +232,7 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
         )
     }
 
-    fun waitUntilGone(timeout: Long = defaultTimeout) = apply {
+    fun waitUntilGone(timeout: Duration = defaultTimeout) = apply {
         val selector = objectSelector
         /** Fail if selector NULL. **/
         MatcherAssert.assertThat(
@@ -238,7 +241,7 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             notNullValue()
         )
         /** [Until.gone] returns true if object is gone and false when it exists **/
-        val byObject: Boolean = device.wait(Until.gone(selector), timeout)
+        val byObject: Boolean = device.wait(Until.gone(selector), timeout.inWholeMilliseconds)
         MatcherAssert.assertThat(
             "Expected object with selector: $selector to GONE but it EXISTS.",
             byObject,
@@ -248,7 +251,7 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
 
     protected open fun waitForObject(
         bySelector: BySelector?,
-        timeout: Long = defaultTimeout
+        timeout: Duration = defaultTimeout
     ): UiObject2 {
         /** Fail if selector NULL. **/
         MatcherAssert.assertThat(
@@ -256,7 +259,7 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             bySelector,
             notNullValue()
         )
-        val byObject = device.wait(Until.findObject(bySelector), timeout)
+        val byObject = device.wait(Until.findObject(bySelector), timeout.inWholeMilliseconds)
         /** Fail if object was not found, i.e. it is NULL. **/
         MatcherAssert.assertThat(
             "Expected object with selector: $bySelector to exist but it doesn't.",
@@ -269,14 +272,14 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
     protected open fun waitForDescendant(
         bySelector: BySelector?,
         descendantSelector: BySelector?,
-        timeout: Long = defaultTimeout
+        timeout: Duration = defaultTimeout
     ): UiObject2 {
         MatcherAssert.assertThat(
             "The ancestor selector was not provided. Please specify it.",
             bySelector,
             notNullValue()
         )
-        val byObject = device.wait(Until.findObject(bySelector), timeout)
+        val byObject = device.wait(Until.findObject(bySelector), timeout.inWholeMilliseconds)
         MatcherAssert.assertThat(
             "Expected object with selector: $bySelector to exist but it doesn't.",
             byObject,
@@ -287,7 +290,7 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             descendantSelector,
             notNullValue()
         )
-        val descendantObject = byObject.wait(Until.findObject(descendantSelector), timeout)
+        val descendantObject = byObject.wait(Until.findObject(descendantSelector), timeout.inWholeMilliseconds)
         MatcherAssert.assertThat(
             "Expected object with selector: $descendantSelector to EXIST but it DOES NOT.",
             descendantObject,
@@ -298,14 +301,14 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
 
     protected open fun waitForDescendant(
         descendantSelector: BySelector?,
-        timeout: Long = defaultTimeout
+        timeout: Duration = defaultTimeout
     ): UiObject2 {
         MatcherAssert.assertThat(
             "The descendant selector was not provided. Please specify it.",
             descendantSelector,
             notNullValue()
         )
-        val descendantObject = givenObject!!.wait(Until.findObject(descendantSelector), timeout)
+        val descendantObject = givenObject!!.wait(Until.findObject(descendantSelector), timeout.inWholeMilliseconds)
         MatcherAssert.assertThat(
             "Expected object with selector: $descendantSelector to EXIST but it DOES NOT.",
             descendantObject,
@@ -314,9 +317,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
         return descendantObject
     }
 
-    fun waitForChecked(timeout: Long = defaultTimeout) =
+    fun waitForChecked(timeout: Duration = defaultTimeout) =
         apply {
-            val locatedObject = uiObject2().wait(Until.checked(true), timeout)
+            val locatedObject = uiObject2().wait(Until.checked(true), timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText to be CHECKED but it IS NOT.",
                 locatedObject,
@@ -324,9 +327,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             )
         }
 
-    fun waitForUnchecked(timeout: Long = defaultTimeout) =
+    fun waitForUnchecked(timeout: Duration = defaultTimeout) =
         apply {
-            val locatedObject = uiObject2().wait(Until.checked(false), timeout)
+            val locatedObject = uiObject2().wait(Until.checked(false), timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText to be NOT CHECKED but it IS.",
                 locatedObject,
@@ -334,9 +337,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             )
         }
 
-    fun waitForNotFocused(timeout: Long = defaultTimeout) =
+    fun waitForNotFocused(timeout: Duration = defaultTimeout) =
         apply {
-            val locatedObject = uiObject2().wait(Until.focused(false), timeout)
+            val locatedObject = uiObject2().wait(Until.focused(false), timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText to be NOT FOCUSED but it IS.",
                 locatedObject,
@@ -344,9 +347,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             )
         }
 
-    fun waitForEnabled(timeout: Long = defaultTimeout) =
+    fun waitForEnabled(timeout: Duration = defaultTimeout) =
         apply {
-            val locatedObject = uiObject2().wait(Until.enabled(true), timeout)
+            val locatedObject = uiObject2().wait(Until.enabled(true), timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText to be ENABLED but it IS NOT.",
                 locatedObject,
@@ -354,9 +357,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             )
         }
 
-    fun waitForDisabled(timeout: Long = defaultTimeout) =
+    fun waitForDisabled(timeout: Duration = defaultTimeout) =
         apply {
-            val locatedObject = uiObject2().wait(Until.enabled(false), timeout)
+            val locatedObject = uiObject2().wait(Until.enabled(false), timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText to be DISABLED but it IS NOT.",
                 locatedObject,
@@ -364,9 +367,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             )
         }
 
-    fun waitForClickable(timeout: Long = defaultTimeout) =
+    fun waitForClickable(timeout: Duration = defaultTimeout) =
         apply {
-            val locatedObject = uiObject2().wait(Until.clickable(true), timeout)
+            val locatedObject = uiObject2().wait(Until.clickable(true), timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText to be DISABLED but it IS NOT.",
                 locatedObject,
@@ -374,9 +377,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             )
         }
 
-    fun waitForSelected(timeout: Long = defaultTimeout) =
+    fun waitForSelected(timeout: Duration = defaultTimeout) =
         apply {
-            val locatedObject = uiObject2().wait(Until.selected(true), timeout)
+            val locatedObject = uiObject2().wait(Until.selected(true), timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText to be SELECTED but it IS NOT.",
                 locatedObject,
@@ -384,9 +387,9 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
             )
         }
 
-    fun waitUntilHasObject(byObject: ByObject, timeout: Long = defaultTimeout) =
+    fun waitUntilHasObject(byObject: ByObject, timeout: Duration = defaultTimeout) =
         apply {
-            val locatedObject = uiObject2().wait(Until.hasObject(byObject.objectSelector), timeout)
+            val locatedObject = uiObject2().wait(Until.hasObject(byObject.objectSelector), timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText to HAVE OBJECT but it DOES NOT.",
                 locatedObject,
@@ -396,10 +399,10 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
 
     fun waitForCustomObjectCondition(
         objectCondition: UiObject2Condition<Boolean>,
-        timeout: Long = defaultTimeout
+        timeout: Duration = defaultTimeout
     ) =
         apply {
-            val locatedObject = uiObject2().wait(objectCondition, timeout)
+            val locatedObject = uiObject2().wait(objectCondition, timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $objectCondition result to be TRUE but it FALSE.",
                 locatedObject,
@@ -409,10 +412,10 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
 
     fun waitForCustomSearchCondition(
         searchCondition: SearchCondition<UiObject2>,
-        timeout: Long = defaultTimeout
+        timeout: Duration = defaultTimeout
     ) =
         apply {
-            val locatedObject = uiObject2().wait(searchCondition, timeout)
+            val locatedObject = uiObject2().wait(searchCondition, timeout.inWholeMilliseconds)
             MatcherAssert.assertThat(
                 "Expected $exceptionSelectorText with search condition $searchCondition to EXIST but it DOES NOT.",
                 locatedObject,

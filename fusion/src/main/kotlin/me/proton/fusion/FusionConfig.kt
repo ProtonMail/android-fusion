@@ -18,31 +18,30 @@
 
 package me.proton.fusion
 
-import androidx.compose.ui.test.junit4.AndroidComposeTestRule
-import androidx.test.ext.junit.rules.ActivityScenarioRule
+import android.content.Context
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
+import kotlin.time.Duration
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.ExperimentalTime
 
-typealias AndroidComposeRule = AndroidComposeTestRule<ActivityScenarioRule<*>, *>
+typealias AtomicComposeRule = AtomicReference<ComposeContentTestRule>
 
+@OptIn(ExperimentalTime::class)
 object FusionConfig {
-
-    val compose = Compose
+    const val fusionTag: String = "FUSION"
+    val commandTimeout: Duration = 10000.milliseconds
+    val watchInterval: Duration = 250.milliseconds
     val uiAutomator = UiAutomator
-    val testRule = TestRule
-    var fusionTag: String = "FUSION"
-    var commandTimeout: Long = 10_000L
-    val targetContext get() = InstrumentationRegistry.getInstrumentation().targetContext!!
-
-    object TestRule {
-        var retriesCount: Int = 1
-    }
+    val targetContext: Context get() = InstrumentationRegistry.getInstrumentation().targetContext
 
     object Compose {
-        val testRule: AtomicReference<AndroidComposeRule> = AtomicReference<AndroidComposeRule>()
+        val useUnmergedTree: AtomicBoolean = AtomicBoolean(false)
+        val testRule: AtomicComposeRule = AtomicComposeRule(null)
         val shouldPrintHierarchyOnFailure: AtomicBoolean = AtomicBoolean(false)
         val shouldPrintToLog: AtomicBoolean = AtomicBoolean(false)
     }
