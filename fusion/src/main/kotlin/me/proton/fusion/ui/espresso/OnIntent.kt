@@ -34,16 +34,19 @@ import me.proton.fusion.waits.ConditionWatcher
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 /**
  * Builder like class that simplifies [intending] and [intended] syntax.
  */
+@OptIn(ExperimentalTime::class)
 class OnIntent : ConditionWatcher {
 
     private val matchers = mutableListOf<Matcher<Intent>>()
-    private var defaultTimeout: Long = FusionConfig.commandTimeout
+    private var defaultTimeout: Duration = FusionConfig.commandTimeout
 
-    fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
+    fun withTimeout(duration: Duration) = apply { defaultTimeout = duration }
 
     fun init() = apply { Intents.init() }
 

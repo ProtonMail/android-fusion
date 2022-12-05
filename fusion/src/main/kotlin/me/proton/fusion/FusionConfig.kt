@@ -18,31 +18,32 @@
 
 package me.proton.fusion
 
-import androidx.compose.ui.test.junit4.ComposeTestRule
+import android.content.Context
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
+import kotlin.time.Duration
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.ExperimentalTime
 
-/**
- *
- */
+typealias AtomicComposeRule = AtomicReference<ComposeContentTestRule>
+
+@OptIn(ExperimentalTime::class)
 object FusionConfig {
-
-    val compose = Compose
+    const val fusionTag: String = "FUSION"
+    val commandTimeout: Duration = 10000.milliseconds
+    val watchInterval: Duration = 250.milliseconds
     val uiAutomator = UiAutomator
-    val testRule = TestRule
-    var fusionTag: String = "FUSION"
-    var commandTimeout: Long = 10_000L
-    fun targetContext() = InstrumentationRegistry.getInstrumentation().targetContext!!
-
-    object TestRule {
-        var retriesCount: Int = 1
-    }
+    val targetContext: Context get() = InstrumentationRegistry.getInstrumentation().targetContext
 
     object Compose {
-        lateinit var testRule: ComposeTestRule
-        var shouldPrintHierarchyOnFailure: Boolean = false
-        var shouldPrintToLog: Boolean = false
+        val useUnmergedTree: AtomicBoolean = AtomicBoolean(false)
+        val testRule: AtomicComposeRule = AtomicComposeRule(null)
+        val shouldPrintHierarchyOnFailure: AtomicBoolean = AtomicBoolean(false)
+        val shouldPrintToLog: AtomicBoolean = AtomicBoolean(false)
     }
 
     object UiAutomator {
@@ -62,7 +63,7 @@ object FusionConfig {
         var shouldSearchByObjectEachAction: Boolean = false
         var shouldSearchUiObjectEachAction: Boolean = false
 
-        var timeout: Long = 10_000L
+        val defaultTimeout: Long = 10_000L
 
         fun boost() {
             config.waitForIdleTimeout = 0

@@ -20,7 +20,6 @@ package me.proton.fusion.ui.espresso
 
 import androidx.test.espresso.DataInteraction
 import androidx.test.espresso.Espresso.onData
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
@@ -31,10 +30,13 @@ import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import me.proton.fusion.waits.ConditionWatcher
 import org.hamcrest.CoreMatchers.anything
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 /**
  * Builder like class that allows to write [ViewActions] and view assertions for ListView items.
  */
+@OptIn(ExperimentalTime::class)
 class OnListView {
 
     fun onListItem(dataMatcher: Matcher<out Any?>): Builder {
@@ -48,13 +50,13 @@ class OnListView {
     class Builder(private val dataMatcher: Matcher<out Any?>) : ConditionWatcher {
 
         private var dataInteraction: DataInteraction = onData(dataMatcher)
-        private var defaultTimeout: Long = FusionConfig.commandTimeout
+        private var defaultTimeout: Duration = FusionConfig.commandTimeout
         private var adapterView: OnView? = null
         private var rootView: OnRootView? = null
         private var childView: OnView? = null
         private var position: Int? = null
 
-        fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
+        fun withTimeout(milliseconds: Duration) = apply { defaultTimeout = milliseconds }
 
         /** [DataInteraction] matcher functions. **/
         fun atPosition(position: Int) = apply {
@@ -151,7 +153,7 @@ class OnListView {
                 dataInteraction = dataInteraction.inAdapterView(adapterView!!.viewMatcher())
             }
             if (rootView != null) {
-                dataInteraction = dataInteraction.inRoot(rootView!!.matcher())
+                dataInteraction = dataInteraction.inRoot(rootView!!.finalMatcher)
             }
             if (position != null) {
                 dataInteraction = dataInteraction.atPosition(position)

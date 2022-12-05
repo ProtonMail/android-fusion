@@ -24,10 +24,13 @@ import me.proton.fusion.FusionConfig
 import org.junit.Assert.fail
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 /**
  * Class that wraps interactions for [UiObject2] elements.
  */
+@OptIn(ExperimentalTime::class)
 class ByObjects : BySelectorGenerator<ByObjects>() {
 
     private var exceptionSelectorText: String = ""
@@ -35,10 +38,10 @@ class ByObjects : BySelectorGenerator<ByObjects>() {
     private var scrollable: Boolean? = null
     private var shouldWaitForObject: Boolean = true
     private var objectSelectorHash: Int? = null
-    private var defaultTimeout: Long = FusionConfig.commandTimeout
+    private var defaultTimeout: Duration = FusionConfig.commandTimeout
     private var locatedObjects: List<UiObject2>? = null
 
-    fun withTimeout(milliseconds: Long) = apply { defaultTimeout = milliseconds }
+    fun withTimeout(milliseconds: Duration) = apply { defaultTimeout = milliseconds }
 
     /** [UiObject] properties. **/
     fun size(): Int = uiObjects2().size
@@ -70,14 +73,14 @@ class ByObjects : BySelectorGenerator<ByObjects>() {
 
     private fun waitForObjects(
         bySelector: BySelector?,
-        timeout: Long = FusionConfig.commandTimeout
+        timeout: Duration = FusionConfig.commandTimeout
     ): List<UiObject2> {
         MatcherAssert.assertThat(
             "Given selector: \"$bySelector\" is empty or null",
             bySelector,
             CoreMatchers.notNullValue()
         )
-        val byObjects = uiDevice.wait(Until.findObjects(bySelector), timeout)
+        val byObjects = uiDevice.wait(Until.findObjects(bySelector), timeout.inWholeMilliseconds)
         MatcherAssert.assertThat(
             "Expected at least one object with selector: $bySelector to exist but it doesn't.",
             byObjects,

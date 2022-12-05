@@ -35,10 +35,12 @@ import me.proton.fusion.waits.ConditionWatcher
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
+import kotlin.time.ExperimentalTime
 
 /**
  * Contains [ViewActions] and [ViewAssertion] Fusion API for a single [View].
  */
+@OptIn(ExperimentalTime::class)
 class OnView : ConditionWatcher, OnViewMatchers<OnView>() {
     private var viewInteraction: ViewInteraction? = null
 

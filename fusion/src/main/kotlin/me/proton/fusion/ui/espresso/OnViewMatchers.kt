@@ -11,19 +11,22 @@ import me.proton.fusion.utils.StringUtils
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
+import kotlin.time.Duration
 import java.util.ArrayList
+import kotlin.time.ExperimentalTime
 
 /**
  * Provides the API for [ViewMatchers] generation.
  */
 @Suppress("UNCHECKED_CAST")
+@OptIn(ExperimentalTime::class)
 open class OnViewMatchers<T> {
 
     private val matchers: ArrayList<Matcher<View>> = ArrayList<Matcher<View>>()
     private val rootMatchers: ArrayList<Matcher<Root>> = ArrayList<Matcher<Root>>()
-    protected var defaultTimeout: Long = FusionConfig.commandTimeout
+    protected var defaultTimeout: Duration = FusionConfig.commandTimeout
 
-    fun withTimeout(milliseconds: Long): T {
+    fun withTimeout(milliseconds: Duration): T {
         defaultTimeout = milliseconds
         return this as T
     }
@@ -295,7 +298,7 @@ open class OnViewMatchers<T> {
     }
 
     fun inRoot(root: OnRootView): T {
-        rootMatchers.add(root.matcher())
+        rootMatchers.add(root.finalMatcher)
         return this as T
     }
 }

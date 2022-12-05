@@ -27,18 +27,21 @@ import junit.framework.TestCase.fail
 import me.proton.fusion.waits.ConditionWatcher
 import me.proton.fusion.FusionConfig
 import org.hamcrest.MatcherAssert.assertThat
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 /**
  * Class that wraps interactions for [UiObject] element.
  */
 @Suppress("UNUSED_EXPRESSION")
+@OptIn(ExperimentalTime::class)
 class UiSelectorObject : ConditionWatcher {
 
     private var objectSelector: UiSelector = UiSelector()
     private fun enabledState() = uiObject().isEnabled
     private fun clickableState() = uiObject().isClickable
     private fun selectedState() = uiObject().isSelected
-    private var defaultTimeout: Long = FusionConfig.commandTimeout
+    private var defaultTimeout: Duration = FusionConfig.commandTimeout
 
     /**
      * Selectors that can be applied to [UiObject].
@@ -291,10 +294,10 @@ class UiSelectorObject : ConditionWatcher {
         apply { waitForCondition(defaultTimeout) { selectedState() } }
 
     fun waitUntilGone() =
-        apply { uiObject(shouldExist = false).waitUntilGone(defaultTimeout) }
+        apply { uiObject(shouldExist = false).waitUntilGone(defaultTimeout.inWholeMilliseconds) }
 
     /** Timeout **/
-    fun withTimeout(timeout: Long = defaultTimeout) = apply { defaultTimeout = timeout }
+    fun withTimeout(timeout: Duration = defaultTimeout) = apply { defaultTimeout = timeout }
 
     /** The core function where object selector is defined. **/
     private fun uiObject(shouldExist: Boolean = true): UiObject {
