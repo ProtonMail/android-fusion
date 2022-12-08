@@ -1,0 +1,40 @@
+default:
+  image: ${CI_REGISTRY}/android/shared/docker-android:v1.0.0
+
+before_script:
+  - export JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=$( echo ${http_proxy##http://} | cut -d':' -f1 ) -Dhttp.proxyPort=$( echo ${http_proxy##http://} | cut -d':' -f2 ) -Dhttps.proxyHost=$( echo ${https_proxy##http://} | cut -d':' -f1 ) -Dhttps.proxyPort=$( echo ${https_proxy##http://} | cut -d':' -f2 ) -Dhttp.nonProxyHosts=\"$( echo $no_proxy | tr ',' '|' )\""
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+variables:
+  # Use no compression for artifacts
+  ARTIFACT_COMPRESSION_LEVEL: "fastest"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .gradle
+
+stages:
+  - build
+  - publish
+
+.build:
+  stage: build
+  tags:
+    - xlarge-k8s
+  artifacts:
+    expire_in: 1 week
+
+build release:
+  extends: [.build]
+  script:
+    - ./gradlew build
+  artifacts:
+    paths:
+      - ./fusion/**/fusion-release.aar
+
+publish to nexus:
+  stage: publish
+  script:
+    - ./gradlew publishNexusPublicationToNexusRepository
+  when: manual

@@ -1,35 +1,39 @@
-import org.jetbrains.kotlin.gradle.plugin.statistics.ReportStatisticsToElasticSearch.url
+import java.util.Properties
+import java.io.FileInputStream
+import java.io.IOException
 
 plugins {
-    id ("com.android.library")
+    id("com.android.library")
     kotlin("android")
-    signing
-    id("com.vanniktech.maven.publish")
+    id("maven-publish")
+    id("signing")
 }
 
-tasks.withType<Sign>().configureEach {
-    onlyIf { false }
+val privateProperties = Properties().apply {
+    try {
+        load(FileInputStream("${rootProject.projectDir}/private.properties"))
+    } catch(e: IOException) {
+        logger.warn("private.properties file doesn't exist. Full error message: $e")
+    }
 }
 
-tasks.register<Zip>("stuffZip") {
-    archiveBaseName.set("stuff")
-    from("src/stuff")
-}
+val nexusUser = System.getenv("NEXUS_USER") ?: "${privateProperties["NEXUS_USER"]}"
+val nexusPwd = System.getenv("NEXUS_PWD") ?: "${privateProperties["NEXUS_PWD"]}"
+val nexusUrl = System.getenv("NEXUS_URL") ?: "${privateProperties["NEXUS_URL"]}"
+val signingInMemoryKey =
+    System.getenv("SIGNING_IN_MEMORY_KEY") ?: "${privateProperties["SIGNING_IN_MEMORY_KEY"]}"
+val signingInMemoryPwd =
+    System.getenv("SIGNING_IN_MEMORY_PWD") ?: "${privateProperties["SIGNING_IN_MEMORY_PWD"]}"
+val gitLabSSHPrefix =
+    System.getenv("GITLAB_SSH_PREFIX") ?: "${privateProperties["GITLAB_SSH_PREFIX"]}"
+val gitLabDomain = System.getenv("GITLAB_DOMAIN") ?: "${privateProperties["GITLAB_DOMAIN"]}"
 
 android {
-    compileSdk = 31
-
-    signing {
-        val signingKeyId: String? by project
-        val signingKey: String? by project
-        val signingPassword: String? by project
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(tasks["stuffZip"])
-    }
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 31
+        targetSdk = 33
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -47,6 +51,42 @@ android {
     }
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("nexus") {
+            groupId = "me.proton"
+            artifactId = "fusion"
+            version = "0.9.0"
+
+            pom {
+                scm {
+                    connection.set("scm:${gitLabSSHPrefix}:proton/android/shared/fusion")
+                    developerConnection.set("${gitLabDomain}android/shared/fusion.git")
+                    url.set("${gitLabDomain}android/shared/fusion")
+                }
+            }
+
+            artifact("$buildDir/outputs/aar/${artifactId}-release.aar")
+        }
+    }
+
+    repositories {
+        maven {
+            name = "nexus"
+            url = uri(nexusUrl)
+            credentials {
+                username = nexusUser
+                password = nexusPwd
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(signingInMemoryKey, signingInMemoryPwd)
+    sign(publishing.publications["nexus"])
+}
+
 dependencies {
     implementation("androidx.core:core-ktx:1.8.0")
     implementation("androidx.compose.ui:ui:1.2.1")
@@ -56,7 +96,6 @@ dependencies {
     implementation("androidx.test.espresso:espresso-core:3.4.0")
     implementation("androidx.test.espresso:espresso-contrib:3.4.0")
     implementation("androidx.test.espresso:espresso-intents:3.4.0")
-//    implementation("androidx.test.espresso:espresso-web:3.4.0")
     implementation("androidx.test.uiautomator:uiautomator:2.2.0")
     implementation("androidx.test:core-ktx:1.4.0")
 }
