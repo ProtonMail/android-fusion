@@ -5,14 +5,14 @@ import java.io.IOException
 plugins {
     id("com.android.library")
     kotlin("android")
-    id("maven-publish")
     id("signing")
+    id("com.vanniktech.maven.publish") version "0.22.0"
 }
 
 val privateProperties = Properties().apply {
     try {
         load(FileInputStream("${rootProject.projectDir}/private.properties"))
-    } catch(e: IOException) {
+    } catch (e: IOException) {
         logger.warn("private.properties file doesn't exist. Full error message: $e")
     }
 }
@@ -20,13 +20,15 @@ val privateProperties = Properties().apply {
 val nexusUser = System.getenv("NEXUS_USER") ?: "${privateProperties["NEXUS_USER"]}"
 val nexusPwd = System.getenv("NEXUS_PWD") ?: "${privateProperties["NEXUS_PWD"]}"
 val nexusUrl = System.getenv("NEXUS_URL") ?: "${privateProperties["NEXUS_URL"]}"
-val signingInMemoryKey =
-    System.getenv("SIGNING_IN_MEMORY_KEY") ?: "${privateProperties["SIGNING_IN_MEMORY_KEY"]}"
-val signingInMemoryPwd =
-    System.getenv("SIGNING_IN_MEMORY_PWD") ?: "${privateProperties["SIGNING_IN_MEMORY_PWD"]}"
 val gitLabSSHPrefix =
     System.getenv("GITLAB_SSH_PREFIX") ?: "${privateProperties["GITLAB_SSH_PREFIX"]}"
 val gitLabDomain = System.getenv("GITLAB_DOMAIN") ?: "${privateProperties["GITLAB_DOMAIN"]}"
+val mavenUser = System.getenv("MAVEN_USER") ?: "${privateProperties["MAVEN_USER"]}"
+val mavenPassword = System.getenv("MAVEN_PASSWORD") ?: "${privateProperties["MAVEN_PASSWORD"]}"
+val mavenSigningKey =
+    System.getenv("MAVEN_SIGNING_KEY") ?: "${privateProperties["MAVEN_SIGNING_KEY"]}"
+val mavenSigningKeyPassword = System.getenv("MAVEN_SIGNING_KEY_PASSWORD")
+    ?: "${privateProperties["MAVEN_SIGNING_KEY_PASSWORD"]}"
 
 android {
     compileSdk = 33
@@ -51,29 +53,23 @@ android {
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("nexus") {
-            groupId = "me.proton"
-            artifactId = "fusion"
-            version = "0.9.0"
-
-            pom {
-                scm {
-                    connection.set("scm:${gitLabSSHPrefix}:proton/android/shared/fusion")
-                    developerConnection.set("${gitLabDomain}android/shared/fusion.git")
-                    url.set("${gitLabDomain}android/shared/fusion")
-                }
-            }
-
-            artifact("$buildDir/outputs/aar/${artifactId}-release.aar")
+mavenPublishing {
+    group = "me.proton"
+    version = "0.9.0"
+    pom {
+        scm {
+            connection.set("scm:${gitLabSSHPrefix}:proton/android/shared/fusion")
+            developerConnection.set("${gitLabDomain}android/shared/fusion.git")
+            url.set("${gitLabDomain}android/shared/fusion")
         }
     }
+}
 
+publishing {
     repositories {
         maven {
-            name = "nexus"
             url = uri(nexusUrl)
+            name = "ProtonNexus"
             credentials {
                 username = nexusUser
                 password = nexusPwd
@@ -83,8 +79,7 @@ publishing {
 }
 
 signing {
-    useInMemoryPgpKeys(signingInMemoryKey, signingInMemoryPwd)
-    sign(publishing.publications["nexus"])
+    useInMemoryPgpKeys(mavenSigningKey, mavenSigningKeyPassword)
 }
 
 dependencies {
