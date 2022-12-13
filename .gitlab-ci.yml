@@ -36,5 +36,5 @@ build release:
 publish to nexus:
   stage: publish
   script:
-    - ./gradlew publishNexusPublicationToNexusRepository
+    - ./gradlew publishMavenPublicationToProtonNexusRepository
   when: manual
