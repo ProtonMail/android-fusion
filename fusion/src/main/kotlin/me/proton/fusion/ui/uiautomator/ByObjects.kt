@@ -19,18 +19,20 @@
 package me.proton.fusion.ui.uiautomator
 
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.*
+import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
+import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.Until
 import me.proton.fusion.FusionConfig
-import org.junit.Assert.fail
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
+import org.junit.Assert.fail
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 /**
  * Class that wraps interactions for [UiObject2] elements.
  */
-@OptIn(ExperimentalTime::class)
 class ByObjects : BySelectorGenerator<ByObjects>() {
 
     private var exceptionSelectorText: String = ""
@@ -53,7 +55,7 @@ class ByObjects : BySelectorGenerator<ByObjects>() {
         } catch (e: IndexOutOfBoundsException) {
             fail(
                 "Object at position $position does not exist. " +
-                        "In total \"${locatedObjects!!.size}\" objects were found."
+                    "In total \"${locatedObjects!!.size}\" objects were found."
             )
         }
         return ByObject(objectAtPosition, objectSelector!!)

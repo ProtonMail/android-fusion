@@ -35,6 +35,8 @@ build release:
 
 publish to nexus:
   stage: publish
+  tags:
+    - xlarge-k8s
   script:
     - ./gradlew publishMavenPublicationToProtonNexusRepository
   when: manual

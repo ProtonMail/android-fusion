@@ -1,4 +1,4 @@
-package me.proton.fusion.ui.compose
+package me.proton.fusion.ui.compose.wrappers
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.semantics.SemanticsActions
@@ -13,14 +13,15 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.text.input.ImeAction
-import me.proton.fusion.utils.StringUtils
+import me.proton.fusion.FusionConfig.targetContext
+import me.proton.fusion.ui.compose.builders.OnNode
 
 /**
  * A collection of semantic matcher wrappers
  *
  * @param T - [NodeMatchers] implementation to be returned after adding at least 1 matcher
  */
-abstract class NodeMatchers<T : NodeMatchers<T>> : ComposeWaiter {
+abstract class NodeMatchers<T : NodeMatchers<T>> {
     val matchers: ArrayList<SemanticsMatcher> = arrayListOf()
 
     /**
@@ -57,19 +58,19 @@ abstract class NodeMatchers<T : NodeMatchers<T>> : ComposeWaiter {
 
     /** Matches node with string resource [textId] **/
     open fun withText(@StringRes textId: Int) =
-        withText(StringUtils.stringFromResource(textId))
+        withText(targetContext.resources.getString(textId))
 
     /**  Matches node with string resource [textId] substring **/
     open fun withTextSubstring(@StringRes textId: Int) =
-        withTextSubstring(StringUtils.stringFromResource(textId))
+        withTextSubstring(targetContext.resources.getString(textId))
 
     /** Matches node with string resource [textId] ignoring case **/
     open fun withTextIgnoringCase(@StringRes textId: Int) =
-        withTextIgnoringCase(StringUtils.stringFromResource(textId))
+        withTextIgnoringCase(targetContext.resources.getString(textId))
 
     /** Matches node with string resource [textId] substring ignoring case **/
     open fun withTextSubstringIgnoringCase(@StringRes textId: Int) =
-        withTextIgnoringCase(StringUtils.stringFromResource(textId))
+        withTextIgnoringCase(targetContext.resources.getString(textId))
 
     /** Matches node with [contentDescription] **/
     open fun withContentDescription(contentDescription: String) =
@@ -89,23 +90,29 @@ abstract class NodeMatchers<T : NodeMatchers<T>> : ComposeWaiter {
 
     /** Matches node with content description with string resource [textId] **/
     open fun withContentDescription(@StringRes textId: Int) =
-        withContentDescription(StringUtils.stringFromResource(textId))
+        withContentDescription(targetContext.resources.getString(textId))
 
     /** Matches node with content description with string resource [textId] substring **/
     open fun withContentDescriptionSubstring(@StringRes textId: Int) =
-        withContentDescriptionSubstring(StringUtils.stringFromResource(textId))
+        withContentDescriptionSubstring(targetContext.resources.getString(textId))
 
     /** Matches node with content description with string resource [textId] ignoring case **/
     open fun withContentDescriptionIgnoringCase(@StringRes textId: Int) =
-        withContentDescriptionIgnoringCase(StringUtils.stringFromResource(textId))
+        withContentDescriptionIgnoringCase(targetContext.resources.getString(textId))
 
     /** Matches node with content description with string resource [textId] substring ignoring case **/
     open fun withContentDescriptionSubstringIgnoringCase(@StringRes textId: Int) =
-        withContentDescriptionSubstringIgnoringCase(StringUtils.stringFromResource(textId))
+        withContentDescriptionSubstringIgnoringCase(targetContext.resources.getString(textId))
 
     /** Matches node with test [tag] **/
     open fun withTag(tag: String) =
         addSemanticMatcher(hasTestTag(tag))
+
+
+    /** Matches node with any of provided tags **/
+    open fun withAnyTag(vararg tag: String): T = addSemanticMatcher(
+        tag.map { hasTestTag(it) }.reduce { first, other -> first or other }
+    )
 
     /** Matches node with [imeAction] **/
     open fun withImeAction(imeAction: ImeAction) =

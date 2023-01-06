@@ -1,4 +1,4 @@
-package me.proton.fusion.ui.compose
+package me.proton.fusion.ui.compose.wrappers
 
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.test.assertAll
@@ -8,10 +8,11 @@ import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
-import kotlin.time.ExperimentalTime
+import me.proton.fusion.ui.compose.ComposeWaiter.waitFor
+import me.proton.fusion.ui.compose.builders.OnNode
+import me.proton.fusion.ui.compose.builders.OnNodes
 
-@OptIn(ExperimentalTime::class)
-interface NodeCollectionActions: ComposeWaiter {
+interface NodeCollectionActions {
     val interaction: SemanticsNodeInteractionCollection
 
     /** return node at [position] **/
@@ -27,10 +28,7 @@ interface NodeCollectionActions: ComposeWaiter {
     fun filterToOne(node: OnNode) = OnNode(interaction.filterToOne(node.finalMatcher))
 
     /** filter all nodes by [node] **/
-    fun filter(node: OnNode) =
-        waitFor {
-            interaction.filter(node.finalMatcher)
-        }
+    fun filter(node: OnNode) = OnNodes(interaction.filter(node.finalMatcher))
 
     /** Node assertions **/
     /** check all nodes match [node] matcher **/

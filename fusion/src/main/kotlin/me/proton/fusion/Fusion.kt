@@ -19,19 +19,19 @@
 
 package me.proton.fusion
 
-import me.proton.fusion.ui.compose.NodeMatchers
-import me.proton.fusion.ui.compose.OnNodes
-import me.proton.fusion.ui.compose.OnNode
+import me.proton.fusion.ui.compose.builders.OnNode
+import me.proton.fusion.ui.compose.builders.OnNodes
+import me.proton.fusion.ui.compose.wrappers.NodeMatchers
 import me.proton.fusion.ui.device.OnDevice
-import me.proton.fusion.ui.espresso.OnIntent
-import me.proton.fusion.ui.espresso.OnListView
-import me.proton.fusion.ui.espresso.OnRecyclerView
-import me.proton.fusion.ui.espresso.OnRootView
-import me.proton.fusion.ui.espresso.OnView
+import me.proton.fusion.ui.espresso.builders.OnIntent
+import me.proton.fusion.ui.espresso.builders.OnListView
+import me.proton.fusion.ui.espresso.builders.OnRecyclerView
+import me.proton.fusion.ui.espresso.builders.OnRootView
+import me.proton.fusion.ui.espresso.builders.OnView
+import me.proton.fusion.ui.espresso.wrappers.EspressoMatchers
 import me.proton.fusion.ui.uiautomator.ByObject
 import me.proton.fusion.ui.uiautomator.ByObjects
 import me.proton.fusion.ui.uiautomator.UiSelectorObject
-import me.proton.fusion.utils.Shell
 
 /**
  * An entry point to Fusion API.
@@ -62,17 +62,17 @@ object Fusion {
     val intent: OnIntent
         get() = OnIntent()
 
-    val listView: OnListView
+    val listView: EspressoMatchers<OnListView>
         get() = OnListView()
 
-    val recyclerView: OnRecyclerView
+    val recyclerView: EspressoMatchers<OnRecyclerView>
         get() = OnRecyclerView()
+
+    val view: EspressoMatchers<OnView>
+        get() = OnView()
 
     val rootView: OnRootView
         get() = OnRootView()
-
-    val view: OnView
-        get() = OnView()
 
     /**
      * ComposeUiTest.
@@ -89,7 +89,4 @@ object Fusion {
      */
     val device: OnDevice
         get() = OnDevice()
-
-    val shell: Shell
-        get() = Shell
 }

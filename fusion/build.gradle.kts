@@ -17,18 +17,14 @@ val privateProperties = Properties().apply {
     }
 }
 
-val nexusUser = System.getenv("NEXUS_USER") ?: "${privateProperties["NEXUS_USER"]}"
-val nexusPwd = System.getenv("NEXUS_PWD") ?: "${privateProperties["NEXUS_PWD"]}"
-val nexusUrl = System.getenv("NEXUS_URL") ?: "${privateProperties["NEXUS_URL"]}"
-val gitLabSSHPrefix =
-    System.getenv("GITLAB_SSH_PREFIX") ?: "${privateProperties["GITLAB_SSH_PREFIX"]}"
-val gitLabDomain = System.getenv("GITLAB_DOMAIN") ?: "${privateProperties["GITLAB_DOMAIN"]}"
-val mavenUser = System.getenv("MAVEN_USER") ?: "${privateProperties["MAVEN_USER"]}"
-val mavenPassword = System.getenv("MAVEN_PASSWORD") ?: "${privateProperties["MAVEN_PASSWORD"]}"
-val mavenSigningKey =
-    System.getenv("MAVEN_SIGNING_KEY") ?: "${privateProperties["MAVEN_SIGNING_KEY"]}"
-val mavenSigningKeyPassword = System.getenv("MAVEN_SIGNING_KEY_PASSWORD")
-    ?: "${privateProperties["MAVEN_SIGNING_KEY_PASSWORD"]}"
+val nexusUser = "NEXUS_USER".fromVariable()
+val nexusPwd = "NEXUS_PWD".fromVariable()
+val nexusUrl = "NEXUS_URL".fromVariable()
+val gitLabSSHPrefix = "GITLAB_SSH_PREFIX".fromVariable()
+val gitLabDomain = "GITLAB_DOMAIN".fromVariable()
+val mavenUser = "MAVEN_USER".fromVariable()
+val mavenSigningKey = "MAVEN_SIGNING_KEY".fromVariable()
+val mavenSigningKeyPassword = "MAVEN_SIGNING_KEY_PASSWORD".fromVariable()
 
 android {
     compileSdk = 33
@@ -55,7 +51,7 @@ android {
 
 mavenPublishing {
     group = "me.proton"
-    version = "0.9.0"
+    version = "0.9.44"
     pom {
         scm {
             connection.set("scm:${gitLabSSHPrefix}:proton/android/shared/fusion")
@@ -83,14 +79,22 @@ signing {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.8.0")
-    implementation("androidx.compose.ui:ui:1.2.1")
-    implementation("androidx.compose.ui:ui-test:1.2.0")
-    implementation("androidx.compose.ui:ui-test-junit4:1.2.1")
-    implementation("androidx.test.ext:junit:1.1.3")
-    implementation("androidx.test.espresso:espresso-core:3.4.0")
-    implementation("androidx.test.espresso:espresso-contrib:3.4.0")
-    implementation("androidx.test.espresso:espresso-intents:3.4.0")
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.compose.ui:ui:1.3.3")
+    implementation("androidx.compose.ui:ui-test:1.3.3")
+    implementation("androidx.compose.ui:ui-test-junit4:1.3.3")
+    implementation("androidx.test.ext:junit:1.1.5")
+    implementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    implementation("androidx.test.espresso:espresso-intents:3.5.1")
     implementation("androidx.test.uiautomator:uiautomator:2.2.0")
-    implementation("androidx.test:core-ktx:1.4.0")
+    implementation("androidx.test:core-ktx:1.5.0")
+}
+
+fun String.fromVariable(): String {
+    val value = System.getenv(this) ?: "${privateProperties[this]}"
+    if (value.isEmpty()) {
+        logger.warn("Variable $this is not set!")
+    }
+    return value
 }
