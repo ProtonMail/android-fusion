@@ -16,7 +16,7 @@
  * along with ProtonCore.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.proton.fusion.ui.espresso
+package me.proton.fusion.ui.espresso.builders
 
 import android.app.Activity
 import android.app.Instrumentation
@@ -24,24 +24,23 @@ import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.annotation.StringRes
 import androidx.test.espresso.intent.ActivityResultFunction
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import me.proton.fusion.FusionConfig
-import me.proton.fusion.waits.ConditionWatcher
+import me.proton.fusion.FusionConfig.targetContext
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 /**
  * Builder like class that simplifies [intending] and [intended] syntax.
  */
-@OptIn(ExperimentalTime::class)
-class OnIntent : ConditionWatcher {
+class OnIntent {
 
     private val matchers = mutableListOf<Matcher<Intent>>()
     private var defaultTimeout: Duration = FusionConfig.commandTimeout
@@ -95,6 +94,10 @@ class OnIntent : ConditionWatcher {
 
     fun hasData(data: String) = apply {
         matchers.add(IntentMatchers.hasData(data))
+    }
+
+    fun hasData(@StringRes dataRes: Int) = apply {
+        matchers.add(IntentMatchers.hasData(targetContext.resources.getString(dataRes)))
     }
 
     fun hasDataUri(dataUri: Uri) = apply {
@@ -159,7 +162,7 @@ class OnIntent : ConditionWatcher {
 
     // Checks with wait that intent with given matchers is sent
     fun checkSent() {
-        waitForCondition(defaultTimeout) { intended(intentMatcher()) }
+        intended(intentMatcher())
     }
 
     fun respondWith(result: Instrumentation.ActivityResult) {
@@ -173,6 +176,15 @@ class OnIntent : ConditionWatcher {
     fun stubExternalIntents() {
         intending(CoreMatchers.not(IntentMatchers.isInternal()))
             .respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
+    }
+
+    fun checkBrowserOpened(url: String) {
+        intended(
+            AllOf.allOf(
+                IntentMatchers.hasAction(Intent.ACTION_VIEW),
+                IntentMatchers.hasData(url)
+            )
+        )
     }
 
     private fun intentMatcher() = AllOf.allOf(matchers)

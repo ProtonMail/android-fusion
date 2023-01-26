@@ -21,18 +21,26 @@ package me.proton.fusion.ui.uiautomator
 import android.graphics.Point
 import android.graphics.Rect
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.*
-import org.hamcrest.MatcherAssert
+import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.SearchCondition
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.UiObject2Condition
+import androidx.test.uiautomator.Until
 import me.proton.fusion.FusionConfig
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.containsString
+import org.hamcrest.CoreMatchers.not
+import org.hamcrest.CoreMatchers.notNullValue
+import org.hamcrest.CoreMatchers.nullValue
+import org.hamcrest.MatcherAssert
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 /**
  * Class that wraps interactions for [UiObject2] element.
  */
-@OptIn(ExperimentalTime::class)
 open class ByObject() : BySelectorGenerator<ByObject>() {
 
     constructor(newObject: UiObject2, newSelector: BySelector) : this() {

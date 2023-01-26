@@ -1,4 +1,4 @@
-package me.proton.fusion.ui.api.enums
+package me.proton.fusion.ui.common.enums
 
 enum class SwipeDirection {
     Left,

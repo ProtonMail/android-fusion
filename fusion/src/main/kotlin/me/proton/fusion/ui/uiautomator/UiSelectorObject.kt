@@ -22,20 +22,17 @@ import android.graphics.Point
 import android.view.MotionEvent
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.*
-import me.proton.fusion.FusionConfig.UiAutomator.shouldSearchUiObjectEachAction
 import junit.framework.TestCase.fail
-import me.proton.fusion.waits.ConditionWatcher
 import me.proton.fusion.FusionConfig
+import me.proton.fusion.FusionConfig.UiAutomator.shouldSearchUiObjectEachAction
 import org.hamcrest.MatcherAssert.assertThat
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 /**
  * Class that wraps interactions for [UiObject] element.
  */
 @Suppress("UNUSED_EXPRESSION")
-@OptIn(ExperimentalTime::class)
-class UiSelectorObject : ConditionWatcher {
+class UiSelectorObject {
 
     private var objectSelector: UiSelector = UiSelector()
     private fun enabledState() = uiObject().isEnabled
@@ -282,16 +279,16 @@ class UiSelectorObject : ConditionWatcher {
         apply { uiObject() }
 
     fun waitForEnabled() =
-        apply { waitForCondition(defaultTimeout) { enabledState() } }
+        apply { enabledState() }
 
     fun waitForDisabled() =
-        apply { waitForCondition(defaultTimeout) { !enabledState() } }
+        apply { !enabledState() }
 
     fun waitForClickable() =
-        apply { waitForCondition(defaultTimeout) { clickableState() } }
+        apply { clickableState() }
 
     fun waitForSelected() =
-        apply { waitForCondition(defaultTimeout) { selectedState() } }
+        apply { selectedState() }
 
     fun waitUntilGone() =
         apply { uiObject(shouldExist = false).waitUntilGone(defaultTimeout.inWholeMilliseconds) }
@@ -306,12 +303,10 @@ class UiSelectorObject : ConditionWatcher {
         }
         val locatedObject = uiDevice.findObject(objectSelector)
         return if (!locatedObject.exists() || shouldSearchUiObjectEachAction && shouldExist) {
-            waitForCondition(defaultTimeout) {
-                assertThat(
-                    "Expected object with selector: $objectSelector to exist but it doesn't ",
-                    locatedObject.exists()
-                )
-            }
+            assertThat(
+                "Expected object with selector: $objectSelector to exist but it doesn't ",
+                locatedObject.exists()
+            )
             locatedObject
         } else {
             locatedObject

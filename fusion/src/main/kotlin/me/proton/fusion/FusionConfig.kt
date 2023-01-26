@@ -23,15 +23,11 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
-import kotlin.time.Duration
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.ExperimentalTime
 
-typealias AtomicComposeRule = AtomicReference<ComposeContentTestRule>
-
-@OptIn(ExperimentalTime::class)
 object FusionConfig {
     const val fusionTag: String = "FUSION"
     val commandTimeout: Duration = 10000.milliseconds
@@ -41,9 +37,17 @@ object FusionConfig {
 
     object Compose {
         val useUnmergedTree: AtomicBoolean = AtomicBoolean(false)
-        val testRule: AtomicComposeRule = AtomicComposeRule(null)
+        val testRule: AtomicReference<ComposeContentTestRule> = AtomicReference(null)
         val shouldPrintHierarchyOnFailure: AtomicBoolean = AtomicBoolean(false)
+        val waitTimeout: AtomicReference<Duration> = AtomicReference(10000.milliseconds)
+        val watchInterval: AtomicReference<Duration> = AtomicReference(0.milliseconds)
         val shouldPrintToLog: AtomicBoolean = AtomicBoolean(false)
+
+        /** Hooks **/
+        var before: () -> Any = { }
+        var after: () -> Any = { }
+        var onFailure: () -> Any = { }
+        var onSuccess: () -> Any = { }
     }
 
     object UiAutomator {
