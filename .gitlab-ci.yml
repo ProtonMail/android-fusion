@@ -27,6 +27,10 @@ stages:
 
 build release:
   extends: [.build]
+  only:
+    - merge_requests
+    - schedules
+    - tags
   script:
     - ./gradlew build
   artifacts:
@@ -39,4 +43,12 @@ publish to nexus:
     - xlarge-k8s
   script:
     - ./gradlew publishMavenPublicationToProtonNexusRepository
+  when: manual
+
+publish to maven:
+  stage: publish
+  tags:
+    - xlarge-k8s
+  script:
+    - ./gradlew publishAllPublicationsToMavenCentralRepository
   when: manual

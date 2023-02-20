@@ -40,7 +40,10 @@ val nexusPwd = "NEXUS_PWD".fromVariable()
 val nexusUrl = "NEXUS_URL".fromVariable()
 val gitLabSSHPrefix = "GITLAB_SSH_PREFIX".fromVariable()
 val gitLabDomain = "GITLAB_DOMAIN".fromVariable()
-val mavenUser = "MAVEN_USER".fromVariable()
+val gitHubDomain = "GITHUB_PROTONMAIL_DOMAIN".fromVariable()
+val mavenUrl = "MAVEN_URL".fromVariable()
+val mavenUser = "mavenCentralUsername".fromVariable()
+val mavenPassword = "mavenCentralPassword".fromVariable()
 val mavenSigningKey = "MAVEN_SIGNING_KEY".fromVariable()
 val mavenSigningKeyPassword = "MAVEN_SIGNING_KEY_PASSWORD".fromVariable()
 
@@ -68,13 +71,13 @@ android {
 }
 
 mavenPublishing {
-    group = "me.proton"
-    version = "0.9.44"
+    group = "me.proton.test"
+    version = "0.9.50"
     pom {
         scm {
-            connection.set("scm:${gitLabSSHPrefix}:proton/android/shared/fusion")
-            developerConnection.set("${gitLabDomain}android/shared/fusion.git")
-            url.set("${gitLabDomain}android/shared/fusion")
+            connection.set(gitHubDomain)
+            developerConnection.set(gitHubDomain)
+            url.set(gitHubDomain)
         }
     }
 }
