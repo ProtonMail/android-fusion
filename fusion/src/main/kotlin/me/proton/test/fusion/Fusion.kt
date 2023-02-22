@@ -37,9 +37,6 @@ import me.proton.test.fusion.ui.uiautomator.UiSelectorObject
  */
 object Fusion {
 
-    val FusionConfig
-        get() = me.proton.test.fusion.FusionConfig
-
     /**
      *  UiAutomator with UiSelector.
      */
