@@ -52,8 +52,6 @@ android {
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -61,12 +59,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-    buildFeatures {
-        viewBinding = true
-        buildConfig = false
     }
 }
 
@@ -110,6 +105,10 @@ dependencies {
     implementation("androidx.test.espresso:espresso-intents:3.5.1")
     implementation("androidx.test.uiautomator:uiautomator:2.2.0")
     implementation("androidx.test:core-ktx:1.5.0")
+    implementation("androidx.core:core-ktx:+")
+    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.activity:activity-compose:1.5.0")
+    androidTestImplementation("androidx.compose.material:material:1.3.1")
 }
 
 fun String.fromVariable(): String {
