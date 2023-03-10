@@ -19,6 +19,7 @@
 package me.proton.test.fusion.ui.espresso.builders
 
 import android.view.View
+import android.widget.AdapterView
 import androidx.test.espresso.DataInteraction
 import androidx.test.espresso.DataInteraction.DisplayDataMatcher.displayDataMatcher
 import androidx.test.espresso.Espresso.onView
@@ -27,6 +28,8 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.AdapterViewProtocols
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.util.EspressoOptional
 import me.proton.test.fusion.ui.espresso.EspressoWaiter
@@ -40,7 +43,8 @@ import java.util.concurrent.atomic.AtomicReference
  * Builder like class that allows to write [ViewActions] and view assertions for ListView items.
  */
 class OnListView : EspressoMatchers<OnListView>(), EspressoActions, EspressoWaiter {
-    private val adapterViewMatcher = AtomicReference<Matcher<View>>(null)
+    private val adapterViewMatcher =
+        AtomicReference<Matcher<View>>(isAssignableFrom(AdapterView::class.java))
     private val childViewMatcher = AtomicReference<Matcher<View>>(null)
     private val position: AtomicReference<Int> = AtomicReference(null)
 

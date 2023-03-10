@@ -23,45 +23,43 @@ import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
-import me.proton.test.fusion.FusionConfig
-import me.proton.test.fusion.FusionConfig.Compose.testRule
-import me.proton.test.fusion.FusionConfig.Compose.useUnmergedTree
+import me.proton.test.fusion.FusionConfig.Compose
 import me.proton.test.fusion.FusionConfig.fusionTag
 import me.proton.test.fusion.ui.common.ActionHandler.handle
 import kotlin.time.Duration
 
 object ComposeWaiter {
     fun <T> T.waitFor(
-        timeout: Duration = FusionConfig.Compose.waitTimeout.get(),
+        timeout: Duration = Compose.waitTimeout.get(),
         block: () -> Any,
     ): T = apply {
-        testRule.get().let { testRule ->
+        Compose.testRule.get().let { testRule ->
             var throwable: Throwable = ComposeTimeoutException("Condition timed out")
             testRule.waitForIdle()
             try {
-                FusionConfig.Compose.before()
+                Compose.before()
                 testRule.waitUntil(timeout.inWholeMilliseconds) {
                     handle {
                         block()
                     }.onSuccess {
                         it.handleLog()
-                        FusionConfig.Compose.onSuccess()
+                        Compose.onSuccess()
                     }.onFailure {
                         throwable = it
                     }.isSuccess
                 }
-                FusionConfig.Compose.after()
+                Compose.after()
             } catch (ex: ComposeTimeoutException) {
-                FusionConfig.Compose.onFailure()
-                if (FusionConfig.Compose.shouldPrintToLog.get()) {
-                    testRule.onRoot(useUnmergedTree = useUnmergedTree.get()).printToLog(fusionTag)
-                }
+                testRule
+                    .onRoot(Compose.useUnmergedTree.get())
+                    .handleLog(Compose.shouldPrintHierarchyOnFailure.get())
+                Compose.onFailure()
                 throw throwable
             }
         }
     }
 
-    private fun <T> T.handleLog(shouldPrint: Boolean = FusionConfig.Compose.shouldPrintToLog.get()) =
+    private fun <T> T.handleLog(shouldPrint: Boolean = Compose.shouldPrintToLog.get()) =
         apply {
             if (!shouldPrint)
                 return@apply
