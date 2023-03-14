@@ -21,7 +21,7 @@ stages:
 .build:
   stage: build
   tags:
-    - xlarge-k8s
+    - large
   artifacts:
     expire_in: 1 week
 

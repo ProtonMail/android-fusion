@@ -79,4 +79,9 @@ class MatchersTests {
         val node = OnView().withText("text").withContentDesc("Any")
         assert(node.finalMatcher.toString() == expectedFinalMatcher.toString())
     }
+
+    @Test
+    fun testIt() {
+        val node = OnNode().withText("text")
+    }
 }

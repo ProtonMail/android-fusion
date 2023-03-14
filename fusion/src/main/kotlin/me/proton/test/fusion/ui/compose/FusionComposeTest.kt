@@ -18,17 +18,21 @@
 
 package me.proton.test.fusion.ui.compose
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import me.proton.test.fusion.FusionConfig
 import org.junit.Before
 import org.junit.Rule
 
-interface FusionComposeTest {
+abstract class FusionComposeTest {
     @get:Rule
-    val composeRule: ComposeContentTestRule
+    val composeRule: ComposeContentTestRule = createComposeRule()
 
     @Before
     fun setComposeRule() {
         FusionConfig.Compose.testRule.set(composeRule)
     }
+
+    fun withContent(composable: @Composable () -> Unit) = composeRule.setContent(composable)
 }
