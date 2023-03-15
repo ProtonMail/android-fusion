@@ -27,7 +27,7 @@ import org.junit.Rule
 
 abstract class FusionComposeTest {
     @get:Rule
-    val composeRule: ComposeContentTestRule = createComposeRule()
+    open val composeRule: ComposeContentTestRule = createComposeRule()
 
     @Before
     fun setComposeRule() {
