@@ -63,11 +63,15 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 mavenPublishing {
     group = "me.proton.test"
-    version = "0.9.51"
+    version = "0.9.52"
     pom {
         scm {
             connection.set(gitHubDomain)
@@ -105,9 +109,10 @@ dependencies {
     implementation("androidx.test.espresso:espresso-intents:3.5.1")
     implementation("androidx.test.uiautomator:uiautomator:2.2.0")
     implementation("androidx.test:core-ktx:1.5.0")
-    implementation("androidx.core:core-ktx:+")
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.compose.material:material:1.3.1")
-    implementation("androidx.activity:activity-compose:1.5.0")
+    implementation("androidx.activity:activity-compose:1.6.1")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.3")
     androidTestImplementation("androidx.compose.material:material:1.3.1")
 }
 
