@@ -22,6 +22,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.test.espresso.matcher.ViewMatchers
 import me.proton.test.fusion.ui.compose.builders.OnNode
+import me.proton.test.fusion.ui.compose.builders.OnNodes
 import me.proton.test.fusion.ui.espresso.builders.OnView
 import org.hamcrest.core.AllOf
 import org.junit.Test
@@ -81,7 +82,8 @@ class MatchersTests {
     }
 
     @Test
-    fun testIt() {
-        val node = OnNode().withText("text")
+    fun useUnmergedTree() {
+        assert(OnNode().withText("").useUnmergedTree(true).shouldUseUnmergedTree)
+        assert(OnNodes().withText("").useUnmergedTree(true).shouldUseUnmergedTree)
     }
 }

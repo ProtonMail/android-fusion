@@ -51,9 +51,7 @@ import me.proton.test.fusion.ui.compose.builders.OnNodes
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/** A collection of Compose action wrappers **/
 interface NodeActions : NodeAssertions {
-
     /** Node Actions **/
     /** performs click **/
     fun click() =

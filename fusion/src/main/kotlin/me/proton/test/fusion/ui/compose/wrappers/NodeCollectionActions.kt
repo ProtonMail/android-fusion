@@ -24,17 +24,24 @@ import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.filterToOne
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
 import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor
 import me.proton.test.fusion.ui.compose.builders.OnNode
 import me.proton.test.fusion.ui.compose.builders.OnNodes
 
-interface NodeCollectionActions {
-    val interaction: SemanticsNodeInteractionCollection
+typealias NodeCollectionInteraction =
+    ComposeContentTestRule.() -> SemanticsNodeInteractionCollection
+
+interface NodeCollectionActions : ComposeInteraction<SemanticsNodeInteractionCollection> {
+    override val composeInteraction: NodeCollectionInteraction
+        get() = { onAllNodes(finalMatcher, shouldUseUnmergedTree) }
 
     /** return node at [position] **/
-    fun atPosition(position: Int) = OnNode(interaction[position])
+    fun atPosition(position: Int) = OnNode(
+        interaction[position]
+    )
 
     /** return first matched node **/
     fun onFirst() = OnNode(interaction.onFirst())
