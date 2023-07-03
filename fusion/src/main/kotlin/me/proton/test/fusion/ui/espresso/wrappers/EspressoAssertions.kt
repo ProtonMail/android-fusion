@@ -23,7 +23,7 @@ import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
-import me.proton.test.fusion.FusionConfig
+import me.proton.test.fusion.FusionConfig.Espresso
 import me.proton.test.fusion.ui.espresso.EspressoWaiter
 import me.proton.test.fusion.ui.espresso.extensions.Matchers
 import org.hamcrest.CoreMatchers
@@ -34,8 +34,8 @@ interface EspressoAssertions : EspressoWaiter {
     val interaction: ViewInteraction
 
     fun await(
-        timeout: Duration = FusionConfig.commandTimeout,
-        interval: Duration = FusionConfig.watchInterval,
+        timeout: Duration = Espresso.waitTimeout.get(),
+        interval: Duration = Espresso.watchInterval.get(),
         assertion: EspressoAssertions.() -> EspressoAssertions
     ) = waitFor(timeout, interval) { assertion() }
 
@@ -48,7 +48,7 @@ interface EspressoAssertions : EspressoWaiter {
         interaction.check(
             matches(
                 ViewMatchers.withText(
-                    FusionConfig.targetContext.resources.getString(
+                    Espresso.targetContext.resources.getString(
                         textId
                     )
                 )

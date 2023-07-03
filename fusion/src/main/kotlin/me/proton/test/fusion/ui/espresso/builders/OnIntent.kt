@@ -43,7 +43,7 @@ import kotlin.time.Duration
 class OnIntent {
 
     private val matchers = mutableListOf<Matcher<Intent>>()
-    private var defaultTimeout: Duration = FusionConfig.commandTimeout
+    private var defaultTimeout: Duration = FusionConfig.Intents.waitTimeout.get()
 
     fun withTimeout(duration: Duration) = apply { defaultTimeout = duration }
 

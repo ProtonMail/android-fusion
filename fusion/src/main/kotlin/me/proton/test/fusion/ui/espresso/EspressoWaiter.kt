@@ -23,7 +23,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import me.proton.test.fusion.FusionConfig
+import me.proton.test.fusion.FusionConfig.Espresso
 import me.proton.test.fusion.FusionConfig.fusionTag
 import me.proton.test.fusion.ui.common.ActionHandler
 import java.util.concurrent.TimeoutException
@@ -31,14 +31,16 @@ import kotlin.time.Duration
 
 interface EspressoWaiter {
     fun <T> T.waitFor(
-        watchTimeout: Duration = FusionConfig.commandTimeout,
-        watchInterval: Duration = FusionConfig.watchInterval,
+        watchTimeout: Duration = Espresso.waitTimeout.get(),
+        watchInterval: Duration = Espresso.watchInterval.get(),
         conditionBlock: () -> Any,
     ): T = apply {
         runBlocking {
-            val timeoutMessage =
-                "Code block did not succeed in ${watchTimeout.inWholeMilliseconds}ms"
+            Espresso.before()
+
+            val timeoutMessage = "Code block did not succeed in ${watchTimeout.inWholeMilliseconds}ms"
             var throwableToThrow: Throwable = TimeoutException(timeoutMessage)
+
             try {
                 withTimeout(watchTimeout) {
                     while (true) {
@@ -49,13 +51,17 @@ interface EspressoWaiter {
                                 delay(watchInterval)
                             }
                             .onSuccess {
+                                Espresso.onSuccess()
                                 return@withTimeout
                             }
                     }
                 }
             } catch (ex: TimeoutCancellationException) {
                 Log.e(fusionTag, timeoutMessage, ex)
+                Espresso.onFailure()
                 throw throwableToThrow
+            } finally {
+                Espresso.after()
             }
         }
     }
