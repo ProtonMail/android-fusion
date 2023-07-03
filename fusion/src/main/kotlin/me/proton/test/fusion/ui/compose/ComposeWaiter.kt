@@ -26,13 +26,16 @@ import androidx.compose.ui.test.printToLog
 import me.proton.test.fusion.FusionConfig.Compose
 import me.proton.test.fusion.FusionConfig.fusionTag
 import me.proton.test.fusion.ui.common.ActionHandler.handle
+import me.proton.test.fusion.ui.compose.builders.OnNode
+import me.proton.test.fusion.ui.compose.wrappers.ComposeInteraction
+import me.proton.test.fusion.ui.espresso.builders.OnView
 import kotlin.time.Duration
 
 object ComposeWaiter {
-    fun <T> T.waitFor(
+    fun <T> ComposeInteraction<T>.waitFor(
         timeout: Duration = Compose.waitTimeout.get(),
         block: () -> Any,
-    ): T = apply {
+    ): ComposeInteraction<T> = apply {
         Compose.testRule.get().let { testRule ->
             var throwable: Throwable = ComposeTimeoutException("Condition timed out")
             testRule.waitForIdle()
@@ -51,7 +54,7 @@ object ComposeWaiter {
                 Compose.after()
             } catch (ex: ComposeTimeoutException) {
                 testRule
-                    .onRoot(Compose.useUnmergedTree.get())
+                    .onRoot(shouldUseUnmergedTree)
                     .handleLog(Compose.shouldPrintHierarchyOnFailure.get())
                 Compose.onFailure()
                 throw throwable

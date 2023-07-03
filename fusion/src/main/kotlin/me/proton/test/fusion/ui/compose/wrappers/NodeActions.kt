@@ -163,7 +163,7 @@ interface NodeActions : NodeAssertions {
         }
 
     /** returns node at child [position] **/
-    fun onChildAt(position: Int): NodeActions =
+    fun onChildAt(position: Int) =
         waitFor {
             OnNode(interaction.onChildAt(position))
         }
