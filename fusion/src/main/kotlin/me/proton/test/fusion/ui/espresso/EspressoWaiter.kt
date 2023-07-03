@@ -23,26 +23,33 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import me.proton.test.fusion.Config
 import me.proton.test.fusion.FusionConfig.Espresso
 import me.proton.test.fusion.FusionConfig.fusionTag
 import me.proton.test.fusion.ui.common.ActionHandler
 import java.util.concurrent.TimeoutException
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
+import kotlin.time.Duration.Companion.milliseconds
 
 interface EspressoWaiter {
     fun <T> T.waitFor(
         watchTimeout: Duration = Espresso.waitTimeout.get(),
         watchInterval: Duration = Espresso.watchInterval.get(),
+        config: Config = Espresso,
         conditionBlock: () -> Any,
     ): T = apply {
+        config.before()
         runBlocking {
-            Espresso.before()
 
             val timeoutMessage = "Code block did not succeed in ${watchTimeout.inWholeMilliseconds}ms"
             var throwableToThrow: Throwable = TimeoutException(timeoutMessage)
 
             try {
-                withTimeout(watchTimeout) {
+                /** set minimum timeout to 1 millisecond, so check does not fail immediately **/
+                val timeout = if (watchTimeout == ZERO) 1.milliseconds else watchTimeout
+
+                withTimeout(timeout) {
                     while (true) {
                         ActionHandler
                             .handle(conditionBlock)
@@ -51,17 +58,17 @@ interface EspressoWaiter {
                                 delay(watchInterval)
                             }
                             .onSuccess {
-                                Espresso.onSuccess()
                                 return@withTimeout
                             }
                     }
                 }
+                config.onSuccess()
             } catch (ex: TimeoutCancellationException) {
                 Log.e(fusionTag, timeoutMessage, ex)
-                Espresso.onFailure()
+                config.onFailure()
                 throw throwableToThrow
             } finally {
-                Espresso.after()
+                config.after()
             }
         }
     }
