@@ -38,7 +38,7 @@ class UiSelectorObject {
     private fun enabledState() = uiObject().isEnabled
     private fun clickableState() = uiObject().isClickable
     private fun selectedState() = uiObject().isSelected
-    private var defaultTimeout: Duration = FusionConfig.commandTimeout
+    private var defaultTimeout: Duration = FusionConfig.UiAutomator.waitTimeout.get()
 
     /**
      * Selectors that can be applied to [UiObject].

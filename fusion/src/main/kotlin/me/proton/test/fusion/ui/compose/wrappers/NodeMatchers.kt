@@ -31,6 +31,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.text.input.ImeAction
+import me.proton.test.fusion.FusionConfig
 import me.proton.test.fusion.FusionConfig.targetContext
 import me.proton.test.fusion.ui.compose.builders.OnNode
 
@@ -41,11 +42,18 @@ import me.proton.test.fusion.ui.compose.builders.OnNode
  */
 abstract class NodeMatchers<T : NodeMatchers<T>> {
     val matchers: ArrayList<SemanticsMatcher> = arrayListOf()
+    open var shouldUseUnmergedTree: Boolean = FusionConfig.Compose.useUnmergedTree.get()
 
     /**
      * Add a semantic matcher and return [T] - a [NodeMatchers] implementation
      */
-    abstract fun addSemanticMatcher(matcher: SemanticsMatcher): T
+    @Suppress("UNCHECKED_CAST")
+    fun addSemanticMatcher(matcher: SemanticsMatcher): T = apply { matchers.add(matcher) } as T
+
+    @Suppress("UNCHECKED_CAST")
+    fun useUnmergedTree(useUnmergedTree: Boolean = true) = apply {
+        shouldUseUnmergedTree = useUnmergedTree
+    } as T
 
     val finalMatcher: SemanticsMatcher
         get() {

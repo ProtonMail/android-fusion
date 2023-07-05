@@ -45,7 +45,7 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
     private var givenObjectSelector: BySelector? = null
     private var locatedObject: UiObject2? = null
     private var objectSelectorHash: Int? = null
-    private var defaultTimeout: Duration = FusionConfig.commandTimeout
+    private var defaultTimeout: Duration = FusionConfig.UiAutomator.waitTimeout.get()
     protected var locatedObjects: List<UiObject2>? = null
     protected var objectPosition: Int? = null
 
@@ -433,7 +433,7 @@ open class ByObject() : BySelectorGenerator<ByObject>() {
          * Locate object again if shouldSearchByObjectEachAction was set to true.
          */
         if (
-            locatedObject == null || FusionConfig.uiAutomator.shouldSearchByObjectEachAction
+            locatedObject == null || FusionConfig.UiAutomator.shouldSearchByObjectEachAction
         ) {
             // Update object selector hash as it may changed.
             when {

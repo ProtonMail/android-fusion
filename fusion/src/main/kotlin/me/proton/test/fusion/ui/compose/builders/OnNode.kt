@@ -18,21 +18,10 @@
 
 package me.proton.test.fusion.ui.compose.builders
 
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
-import me.proton.test.fusion.FusionConfig.Compose
-import me.proton.test.fusion.FusionConfig.Compose.testRule
 import me.proton.test.fusion.ui.compose.wrappers.NodeActions
 import me.proton.test.fusion.ui.compose.wrappers.NodeMatchers
 
-class OnNode(
-    private val overrideInteraction: SemanticsNodeInteraction? = null,
-    private val shouldUseUnmergedTree: Boolean = Compose.useUnmergedTree.get()
-) : NodeMatchers<OnNode>(), NodeActions {
-    override fun addSemanticMatcher(matcher: SemanticsMatcher): OnNode =
-        apply { matchers.add(matcher) }
-
-    override val interaction
-        get() =
-            overrideInteraction ?: testRule.get().onNode(finalMatcher, shouldUseUnmergedTree)
-}
+open class OnNode(
+    override val overrideInteraction: SemanticsNodeInteraction? = null
+) : NodeMatchers<OnNode>(), NodeActions

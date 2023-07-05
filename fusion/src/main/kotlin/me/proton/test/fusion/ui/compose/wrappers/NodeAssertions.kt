@@ -39,17 +39,23 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertIsToggleable
 import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertTextContains
-import me.proton.test.fusion.FusionConfig
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import me.proton.test.fusion.FusionConfig.Compose
 import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor
 import kotlin.time.Duration
 
+typealias NodeInteraction =
+    ComposeContentTestRule.() -> SemanticsNodeInteraction
+
 /** A collection of Compose assertion wrappers **/
-interface NodeAssertions {
-    val interaction: SemanticsNodeInteraction
+interface NodeAssertions : ComposeInteraction<SemanticsNodeInteraction> {
+
+    override val composeInteraction: NodeInteraction
+        get() = { onNode(finalMatcher, shouldUseUnmergedTree) }
 
     /** Waits for node [assertion] with given [timeout] **/
     fun await(
-        timeout: Duration = FusionConfig.commandTimeout,
+        timeout: Duration = Compose.waitTimeout.get(),
         assertion: NodeAssertions.() -> NodeAssertions
     ) = waitFor(timeout) { assertion() }
 
