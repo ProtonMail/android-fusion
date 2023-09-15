@@ -24,7 +24,7 @@ import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.filterToOne
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
 import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor
@@ -32,7 +32,7 @@ import me.proton.test.fusion.ui.compose.builders.OnNode
 import me.proton.test.fusion.ui.compose.builders.OnNodes
 
 typealias NodeCollectionInteraction =
-    ComposeContentTestRule.() -> SemanticsNodeInteractionCollection
+    ComposeTestRule.() -> SemanticsNodeInteractionCollection
 
 interface NodeCollectionActions : ComposeInteraction<SemanticsNodeInteractionCollection> {
     override val composeInteraction: NodeCollectionInteraction

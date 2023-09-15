@@ -39,13 +39,13 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertIsToggleable
 import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import me.proton.test.fusion.FusionConfig.Compose
 import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor
 import kotlin.time.Duration
 
 typealias NodeInteraction =
-    ComposeContentTestRule.() -> SemanticsNodeInteraction
+    ComposeTestRule.() -> SemanticsNodeInteraction
 
 /** A collection of Compose assertion wrappers **/
 interface NodeAssertions : ComposeInteraction<SemanticsNodeInteraction> {
