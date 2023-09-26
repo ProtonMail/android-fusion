@@ -19,7 +19,7 @@
 package me.proton.test.fusion
 
 import android.content.Context
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
@@ -34,7 +34,7 @@ object FusionConfig : Config() {
 
     object Compose : Config() {
         val useUnmergedTree: AtomicBoolean = AtomicBoolean(false)
-        val testRule: AtomicReference<ComposeContentTestRule> = AtomicReference(null)
+        val testRule: AtomicReference<ComposeTestRule> = AtomicReference(null)
         val shouldPrintHierarchyOnFailure: AtomicBoolean = AtomicBoolean(false)
         val shouldPrintToLog: AtomicBoolean = AtomicBoolean(false)
     }
