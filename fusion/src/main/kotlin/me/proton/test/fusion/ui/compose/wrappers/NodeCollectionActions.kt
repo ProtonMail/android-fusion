@@ -60,17 +60,17 @@ interface NodeCollectionActions : ComposeInteraction<SemanticsNodeInteractionCol
     fun assertEach(node: OnNode) =
         waitFor {
             interaction.assertAll(node.finalMatcher)
-        }
+        } as NodeCollectionActions
 
     /** check any node matches [node] matcher **/
     fun assertAny(node: OnNode) =
         waitFor {
             interaction.assertAny(node.finalMatcher)
-        }
+        } as NodeCollectionActions
 
     /** check not collection [count] **/
     fun assertCountEquals(count: Int) =
         waitFor {
             interaction.assertCountEquals(count)
-        }
+        } as NodeCollectionActions
 }

@@ -16,10 +16,10 @@ repositories {
 }
 
 // build.gradle
-androidTestImplementation "me.proton.test:fusion:0.9.50"
+androidTestImplementation "me.proton.test:fusion:0.9.62"
 
 // build.gradle.kts
-androidTestImplementation("me.proton.test:fusion:0.9.50")
+androidTestImplementation("me.proton.test:fusion:0.9.62")
 ```
 
 To start using **Fusion API** simply import required builder
@@ -60,7 +60,7 @@ class EspressoTests {
             .withText(R.string.test)
             .checkIsDisplayed()
     }
-
+}
 ```
 
 ### Compose UI
