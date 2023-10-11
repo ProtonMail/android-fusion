@@ -42,8 +42,8 @@ val gitLabSSHPrefix = "GITLAB_SSH_PREFIX".fromVariable()
 val gitLabDomain = "GITLAB_DOMAIN".fromVariable()
 val gitHubDomain = "GITHUB_PROTONMAIL_DOMAIN".fromVariable()
 val mavenUrl = "MAVEN_URL".fromVariable()
-val mavenUser = "mavenCentralUsername".fromVariable()
-val mavenPassword = "mavenCentralPassword".fromVariable()
+val mavenUser = "MAVEN_USER".fromVariable()
+val mavenPassword = "MAVEN_PASSWORD".fromVariable()
 val mavenSigningKey = "MAVEN_SIGNING_KEY".fromVariable()
 val mavenSigningKeyPassword = "MAVEN_SIGNING_KEY_PASSWORD".fromVariable()
 
@@ -71,7 +71,7 @@ android {
 
 mavenPublishing {
     group = "me.proton.test"
-    version = "0.9.52"
+    version = "0.9.62"
     pom {
         scm {
             connection.set(gitHubDomain)
@@ -84,11 +84,11 @@ mavenPublishing {
 publishing {
     repositories {
         maven {
-            url = uri(nexusUrl)
+            url = uri(mavenUrl)
             name = "ProtonNexus"
             credentials {
-                username = nexusUser
-                password = nexusPwd
+                username = mavenUser
+                password = mavenPassword
             }
         }
     }
@@ -118,7 +118,7 @@ dependencies {
 
 fun String.fromVariable(): String {
     val value = System.getenv(this) ?: "${privateProperties[this]}"
-    if (value.isEmpty()) {
+    if (value.isEmpty() || value == "null") {
         logger.warn("Variable $this is not set!")
     }
     return value

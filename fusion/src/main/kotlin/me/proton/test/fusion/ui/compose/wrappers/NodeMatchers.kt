@@ -42,7 +42,7 @@ import me.proton.test.fusion.ui.compose.builders.OnNode
  */
 abstract class NodeMatchers<T : NodeMatchers<T>> {
     val matchers: ArrayList<SemanticsMatcher> = arrayListOf()
-    open var shouldUseUnmergedTree: Boolean = FusionConfig.Compose.useUnmergedTree.get()
+    var shouldUseUnmergedTree: Boolean = FusionConfig.Compose.useUnmergedTree.get()
 
     /**
      * Add a semantic matcher and return [T] - a [NodeMatchers] implementation

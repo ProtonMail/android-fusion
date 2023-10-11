@@ -45,7 +45,7 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.test.swipeUp
 import me.proton.test.fusion.ui.common.enums.SwipeDirection
-import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor
+import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor as wait
 import me.proton.test.fusion.ui.compose.builders.OnNode
 import me.proton.test.fusion.ui.compose.builders.OnNodes
 import kotlin.time.Duration
@@ -219,4 +219,6 @@ interface NodeActions : NodeAssertions {
         waitFor {
             OnNodes(interaction.onAncestors())
         }
+
+    private fun waitFor(block: () -> Any) = wait(block = block) as NodeActions
 }
