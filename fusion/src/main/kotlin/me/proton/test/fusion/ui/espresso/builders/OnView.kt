@@ -24,7 +24,7 @@ import androidx.test.espresso.Root
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
-import me.proton.test.fusion.ui.espresso.EspressoWaiter
+import me.proton.test.fusion.ui.FusionWaiter
 import me.proton.test.fusion.ui.espresso.wrappers.EspressoActions
 import me.proton.test.fusion.ui.espresso.wrappers.EspressoMatchers
 import org.hamcrest.Matcher
@@ -32,7 +32,7 @@ import org.hamcrest.Matcher
 /**
  * Builder like class that allows to write [ViewActions] and view assertions for ListView items.
  */
-open class OnView : EspressoMatchers<OnView>(), EspressoActions, EspressoWaiter {
+open class OnView : EspressoMatchers<OnView>(), EspressoActions, FusionWaiter {
     override val interaction: ViewInteraction
         get() = Espresso.onView(finalMatcher).inRoot(finalRootMatcher)
 

@@ -18,6 +18,7 @@
 
 package me.proton.test.fusion.ui.compose.wrappers
 
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -41,6 +42,7 @@ import me.proton.test.fusion.ui.compose.builders.OnNode
  * @param T - [NodeMatchers] implementation to be returned after adding at least 1 matcher
  */
 abstract class NodeMatchers<T : NodeMatchers<T>> {
+    private val resources get() = targetContext.resources
     val matchers: ArrayList<SemanticsMatcher> = arrayListOf()
     var shouldUseUnmergedTree: Boolean = FusionConfig.Compose.useUnmergedTree.get()
 
@@ -55,7 +57,7 @@ abstract class NodeMatchers<T : NodeMatchers<T>> {
         shouldUseUnmergedTree = useUnmergedTree
     } as T
 
-    val finalMatcher: SemanticsMatcher
+    val matcher: SemanticsMatcher
         get() {
             require(matchers.isNotEmpty()) {
                 "At least one matcher should be provided to operate on the node."
@@ -99,6 +101,18 @@ abstract class NodeMatchers<T : NodeMatchers<T>> {
     /** Matches node with string resource [textId] substring ignoring case **/
     open fun withTextSubstringIgnoringCase(@StringRes textId: Int) =
         withTextIgnoringCase(targetContext.resources.getString(textId))
+
+    /** Matches node with text resource with [resId] formatted with [formatArgs] strings **/
+    open fun withFormatTextResource(@StringRes resId: Int, vararg formatArgs: String) =
+        withText(resources.getString(resId, *formatArgs))
+
+    /** Matches node with text resource with [resId] formatted with [formatArgs] resource ids **/
+    open fun withFormatTextResource(@StringRes resId: Int, @StringRes vararg formatArgsResId: Int) =
+        withFormatTextResource(resId, *formatArgsResId.map(resources::getString).toTypedArray())
+
+    /** Matches node with plural text resource with [resId] formatted with [quantity] **/
+    open fun withPluralTextResource(@PluralsRes resId: Int, quantity: Int, ) =
+        withText(resources.getQuantityString(resId, quantity).format(quantity))
 
     /** Matches node with [contentDescription] **/
     open fun withContentDescription(contentDescription: String) =
@@ -262,24 +276,24 @@ abstract class NodeMatchers<T : NodeMatchers<T>> {
     /**
      * 'has' matchers deal with relationships between two nodes
      */
-
     /** Matches node with [ancestor] node **/
     open fun hasAncestor(ancestor: OnNode) =
-        addSemanticMatcher(hasAnyAncestor(ancestor.finalMatcher))
+        addSemanticMatcher(hasAnyAncestor(ancestor.matcher))
 
+    @Deprecated("hasParent() is deprecated", ReplaceWith("hasAncestor()"))
     /** Matches node with [parent] node **/
     open fun hasParent(parent: OnNode) =
-        addSemanticMatcher(parent.finalMatcher)
+        addSemanticMatcher(parent.matcher)
 
     /** Matches node with [child] node **/
     open fun hasChild(child: OnNode) =
-        addSemanticMatcher(hasAnyChild(child.finalMatcher))
+        addSemanticMatcher(hasAnyChild(child.matcher))
 
     /** Matches node with [sibling] node **/
     open fun hasSibling(sibling: OnNode) =
-        addSemanticMatcher(hasAnySibling(sibling.finalMatcher))
+        addSemanticMatcher(hasAnySibling(sibling.matcher))
 
     /** Matches node with [descendant] node **/
     open fun hasDescendant(descendant: OnNode) =
-        addSemanticMatcher(hasAnyDescendant(descendant.finalMatcher))
+        addSemanticMatcher(hasAnyDescendant(descendant.matcher))
 }

@@ -28,11 +28,10 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.AdapterViewProtocols
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.util.EspressoOptional
-import me.proton.test.fusion.ui.espresso.EspressoWaiter
+import me.proton.test.fusion.ui.FusionWaiter
 import me.proton.test.fusion.ui.espresso.wrappers.EspressoActions
 import me.proton.test.fusion.ui.espresso.wrappers.EspressoMatchers
 import org.hamcrest.CoreMatchers.allOf
@@ -42,7 +41,7 @@ import java.util.concurrent.atomic.AtomicReference
 /**
  * Builder like class that allows to write [ViewActions] and view assertions for ListView items.
  */
-class OnListView : EspressoMatchers<OnListView>(), EspressoActions, EspressoWaiter {
+class OnListView : EspressoMatchers<OnListView>(), EspressoActions, FusionWaiter {
     private val adapterViewMatcher =
         AtomicReference<Matcher<View>>(isAssignableFrom(AdapterView::class.java))
     private val childViewMatcher = AtomicReference<Matcher<View>>(null)

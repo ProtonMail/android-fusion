@@ -1,5 +1,5 @@
 default:
-  image: ${CI_REGISTRY}/android/shared/docker-android:v1.0.0
+  image: ${CI_REGISTRY}/android/shared/docker-android/oci:v2.0.0
 
 before_script:
   - export JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=$( echo ${http_proxy##http://} | cut -d':' -f1 ) -Dhttp.proxyPort=$( echo ${http_proxy##http://} | cut -d':' -f2 ) -Dhttps.proxyHost=$( echo ${https_proxy##http://} | cut -d':' -f1 ) -Dhttps.proxyPort=$( echo ${https_proxy##http://} | cut -d':' -f2 ) -Dhttp.nonProxyHosts=\"$( echo $no_proxy | tr ',' '|' )\""
@@ -16,16 +16,17 @@ cache:
 
 stages:
   - build
+  - test
   - publish
 
 .build:
   stage: build
   tags:
-    - large
+    - shared-large
   artifacts:
     expire_in: 1 week
 
-build release:
+build:release:
   extends: [.build]
   only:
     - merge_requests
@@ -37,10 +38,19 @@ build release:
     paths:
       - ./fusion/**/fusion-release.aar
 
+test:unit:
+  stage: test
+  only:
+    - merge_requests
+  tags:
+    - shared-large
+  script:
+    - ./gradlew check
+
 publish to nexus:
   stage: publish
   tags:
-    - xlarge-k8s
+    - shared-large
   script:
     - ./gradlew publishMavenPublicationToProtonNexusRepository
   when: manual
@@ -48,7 +58,7 @@ publish to nexus:
 publish to maven:
   stage: publish
   tags:
-    - xlarge-k8s
+    - shared-large
   script:
     - ./gradlew publishAllPublicationsToMavenCentralRepository
   when: manual

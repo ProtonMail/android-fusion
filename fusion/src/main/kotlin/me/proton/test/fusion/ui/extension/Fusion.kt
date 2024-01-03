@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2022 Proton Technologies AG
- * This file is part of Proton Technologies AG and ProtonCore.
+ * This file is part of Proton AG and ProtonCore.
  *
  * ProtonCore is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,18 @@
  * along with ProtonCore.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.proton.test.fusion.ui.common
+package me.proton.test.fusion.ui.extension
 
-import me.proton.test.fusion.extension.handleErrorLog
-import java.util.concurrent.atomic.AtomicBoolean
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
+import me.proton.test.fusion.FusionConfig
 
-object ActionHandler {
-    private val exceptionCaughtFlag: AtomicBoolean = AtomicBoolean(false)
-
-    fun <T> handle(block: () -> T): Result<T> = try {
-        Result
-            .success(block())
-            .apply { exceptionCaughtFlag.set(false) }
-    } catch (throwable: Throwable) {
-        throwable.takeIf { !exceptionCaughtFlag.get() }?.handleErrorLog()
-        exceptionCaughtFlag.set(false)
-        Result.failure(throwable)
+inline fun <reified A : ComponentActivity> createFusionAndroidComposeRule() =
+    createAndroidComposeRule<A>().apply {
+        FusionConfig.Compose.testRule.set(this)
     }
+
+fun createFusionComposeRule() = createComposeRule().apply {
+    FusionConfig.Compose.testRule.set(this)
 }

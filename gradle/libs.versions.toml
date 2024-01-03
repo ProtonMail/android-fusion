@@ -1,0 +1,49 @@
+[versions]
+compose = "1.5.4"
+espresso = "3.5.1"
+uiautomator = "2.2.0"
+test-ext = "1.1.5"
+navigation = "2.7.5"
+test-core-ktx = "1.5.0"
+activity-compose = "1.8.1"
+core-ktx = "1.12.0"
+build-tools = "8.1.4"
+gradle-plugin = "1.7.20"
+
+#noinspection GradleDependency
+lint = "30.1.1"
+
+[libraries]
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+compose-ui-test = { module = "androidx.compose.ui:ui-test", version.ref = "compose" }
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
+compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
+
+espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso"}
+espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espresso"}
+espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espresso"}
+
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation"}
+navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigation"}
+
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose"}
+
+uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator"}
+
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+core-ktx-test = { module = "androidx.test:core-ktx", version.ref = "test-core-ktx" }
+
+android-tools-build = { module = "com.android.tools.build:gradle", version.ref = "build-tools" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "gradle-plugin" }
+
+
+lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
+lint-checks = { module = "com.android.tools.lint:lint-checks", version.ref = "lint" }
+
+[bundles]
+compose = ["compose-ui", "compose-ui-test", "compose-ui-test-junit4", "compose-ui-test-manifest", "activity-compose"]
+espresso = ["espresso-core", "espresso-contrib", "espresso-intents"]
+coreKtx = ["core-ktx", "core-ktx-test"]
+navigation = ["navigation-compose", "navigation-testing"]
+lint = ["lint-api", "lint-checks"]

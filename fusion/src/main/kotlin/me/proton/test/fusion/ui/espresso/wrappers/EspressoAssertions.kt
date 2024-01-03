@@ -24,20 +24,23 @@ import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import me.proton.test.fusion.FusionConfig.Espresso
-import me.proton.test.fusion.ui.espresso.EspressoWaiter
+import me.proton.test.fusion.ui.FusionWaiter
 import me.proton.test.fusion.ui.espresso.extensions.Matchers
 import org.hamcrest.CoreMatchers
 import org.junit.Assert.assertFalse
 import kotlin.time.Duration
 
-interface EspressoAssertions : EspressoWaiter {
+interface EspressoAssertions : FusionWaiter {
     val interaction: ViewInteraction
 
     fun await(
         timeout: Duration = Espresso.waitTimeout.get(),
         interval: Duration = Espresso.watchInterval.get(),
         assertion: EspressoAssertions.() -> EspressoAssertions
-    ) = waitFor(timeout, interval) { assertion() }
+    ) = waitFor(
+        timeout = timeout,
+        interval = interval
+    ) { assertion() }
 
     /** Assertion wrappers **/
     fun checkContainsText(text: String) = apply {

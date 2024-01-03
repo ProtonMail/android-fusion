@@ -17,42 +17,34 @@
  */
 
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    kotlin("jvm")
     id("signing")
     id("com.vanniktech.maven.publish") version "0.22.0"
 }
 
-android {
-    compileSdk = 34
+dependencies {
+    compileOnly(libs.bundles.lint)
+}
 
-    defaultConfig {
-        namespace = "me.proton.test.fusion"
-        minSdk = 23
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+tasks.jar {
+    manifest {
+        attributes(
+            "Manifest-Version" to "1.0",
+            "Implementation-Title" to "Fusion Lint Rules",
+            "Implementation-Version" to "1.0"
+        )
     }
+}
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
-    buildFeatures {
-        compose = true
-    }
-
-    lint {
-        checkTestSources = true
+val jar by tasks.getting(Jar::class) {
+    manifest {
+        attributes["Lint-Registry-v2"] = "me.proton.test.fusion.lint.RobotIssueRegistry"
     }
 }
 
 mavenPublishing {
     group = "me.proton.test"
-    version = "0.9.92"
+    version = "1.0.2"
     pom {
         scm {
             connection.set(GITHUB_PROTONMAIL_DOMAIN)
@@ -77,27 +69,4 @@ publishing {
 
 signing {
     useInMemoryPgpKeys(MAVEN_SIGNING_KEY, MAVEN_SIGNING_KEY_PASSWORD)
-}
-
-dependencies {
-    constraints {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
-            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
-        }
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
-            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
-        }
-    }
-
-    implementation(libs.bundles.compose)
-    implementation(libs.bundles.espresso)
-    implementation(libs.bundles.coreKtx)
-    implementation(libs.uiautomator)
-
-    debugImplementation(libs.compose.ui.test.manifest)
-
-    androidTestImplementation(libs.compose.material)
-    androidTestImplementation(libs.navigation.testing)
-    androidTestImplementation(libs.navigation.compose)
-    lintChecks(project(":fusion-lint"))
 }

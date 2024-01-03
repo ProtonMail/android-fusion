@@ -23,6 +23,7 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
+import me.proton.test.fusion.ui.extension.plus
 import me.proton.test.fusion.ui.uiautomator.ByObject
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
@@ -42,6 +43,8 @@ object FusionConfig : Config() {
     object Espresso : Config()
 
     object Intents : Config()
+
+    object Robot : Config()
 
     object UiAutomator : Config() {
         /**
@@ -74,11 +77,17 @@ object FusionConfig : Config() {
 open class Config {
     val targetContext: Context get() = InstrumentationRegistry.getInstrumentation().targetContext
     val waitTimeout: AtomicReference<Duration> = AtomicReference(10000.milliseconds)
+    val assertTimeout: AtomicReference<Duration> = AtomicReference(25.milliseconds)
     val watchInterval: AtomicReference<Duration> = AtomicReference(25.milliseconds)
 
     /** Hooks **/
-    var before: () -> Any = { }
-    var after: () -> Any = { }
-    var onFailure: () -> Any = { }
-    var onSuccess: () -> Any = { }
+    var before: () -> Unit = { }
+        set(value) { field += value }
+    var after: () -> Unit = { }
+        set(value) { field += value }
+    var onFailure: () -> Unit = { }
+        set(value) { field += value }
+    var onSuccess: () -> Unit = { }
+        set(value) { field += value }
 }
+

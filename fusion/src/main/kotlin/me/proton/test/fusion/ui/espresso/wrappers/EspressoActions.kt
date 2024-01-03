@@ -25,16 +25,22 @@ import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.DrawerActions
+import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions
+import me.proton.test.fusion.data.FusionActions
 import me.proton.test.fusion.ui.common.enums.SwipeDirection
 import me.proton.test.fusion.ui.espresso.extensions.Actions
+import me.proton.test.fusion.ui.espresso.extensions.asDayOfMonth
+import me.proton.test.fusion.ui.espresso.extensions.asMonth
+import me.proton.test.fusion.ui.espresso.extensions.asYear
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
+import java.util.Date
 
 /**
  * Contains [ViewActions] and [ViewAssertion] Fusion API for a single [View].
  */
-interface EspressoActions : EspressoAssertions {
+interface EspressoActions : EspressoAssertions, FusionActions {
     fun perform(viewAction: ViewAction): EspressoActions
 
     /** Action wrappers. **/
@@ -92,8 +98,22 @@ interface EspressoActions : EspressoAssertions {
             .perform(Actions.NestedScrollViewExtension())
     }
 
+    fun setDate(date: Date, normalizeMonthOfYear: Boolean = true) =
+        perform(
+            PickerActions.setDate(
+                date.asYear,
+                date.asMonth + (!normalizeMonthOfYear).toInt(),
+                date.asDayOfMonth
+            )
+        )
+
     interface EspressoRecyclerViewActions : EspressoActions {
         fun scrollToHolder(viewHolderMatcher: Matcher<RecyclerView.ViewHolder>): EspressoActions =
             perform(RecyclerViewActions.scrollToHolder(viewHolderMatcher))
+    }
+
+    private fun Boolean.toInt() = when (this) {
+        true -> 1
+        false -> 0
     }
 }

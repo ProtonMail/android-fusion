@@ -16,21 +16,6 @@
  * along with ProtonCore.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.proton.test.fusion.ui.common
+package me.proton.test.fusion.data
 
-import me.proton.test.fusion.extension.handleErrorLog
-import java.util.concurrent.atomic.AtomicBoolean
-
-object ActionHandler {
-    private val exceptionCaughtFlag: AtomicBoolean = AtomicBoolean(false)
-
-    fun <T> handle(block: () -> T): Result<T> = try {
-        Result
-            .success(block())
-            .apply { exceptionCaughtFlag.set(false) }
-    } catch (throwable: Throwable) {
-        throwable.takeIf { !exceptionCaughtFlag.get() }?.handleErrorLog()
-        exceptionCaughtFlag.set(false)
-        Result.failure(throwable)
-    }
-}
+interface FusionActions
