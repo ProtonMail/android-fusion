@@ -18,22 +18,21 @@
 
 package me.proton.test.fusion.ui.compose.wrappers
 
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.NativeKeyEvent
+import androidx.compose.ui.input.key.nativeKeyCode
 import androidx.compose.ui.semantics.AccessibilityAction
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.test.TouchInjectionScope
-import androidx.compose.ui.test.filterToOne
-import androidx.compose.ui.test.onAncestors
-import androidx.compose.ui.test.onChild
-import androidx.compose.ui.test.onChildAt
-import androidx.compose.ui.test.onChildren
-import androidx.compose.ui.test.onParent
-import androidx.compose.ui.test.onSibling
-import androidx.compose.ui.test.onSiblings
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performKeyPress
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performScrollToKey
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextClearance
@@ -44,31 +43,34 @@ import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.test.swipeUp
+import me.proton.test.fusion.data.FusionActions
 import me.proton.test.fusion.ui.common.enums.SwipeDirection
-import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor as wait
 import me.proton.test.fusion.ui.compose.builders.OnNode
-import me.proton.test.fusion.ui.compose.builders.OnNodes
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor as wait
 
-interface NodeActions : NodeAssertions {
+interface NodeActions : NodeAssertions, FusionActions, NodeFinders {
     /** Node Actions **/
     /** performs click **/
-    fun click() =
-        waitFor {
-            interaction.performClick()
-        }
+    fun click() = waitFor(interaction::performClick)
 
     /** scrolls to element **/
-    fun scrollTo() =
-        waitFor {
-            interaction.performScrollTo()
-        }
+    fun scrollTo() = waitFor(interaction::performScrollTo)
+
+    /** Scrolls to the item with the given [index] **/
+    fun scrollToIndex(index: Int) = waitFor { interaction.performScrollToIndex(index) }
+
+    /** Scrolls to the item with the given [key] **/
+    fun scrollToKey(key: Any) = waitFor { interaction.performScrollToKey(key) }
+
+    /** performs ime action **/
+    fun performImeAction() = waitFor(interaction::performImeAction)
 
     /** scrolls to given [node] **/
     fun scrollTo(node: OnNode) =
         waitFor {
-            interaction.performScrollToNode(node.finalMatcher)
+            interaction.performScrollToNode(node.matcher)
         }
 
     /** swipe up on element **/
@@ -126,17 +128,14 @@ interface NodeActions : NodeAssertions {
         }
 
     /** performs custom [action] **/
-    fun performCustomAction(action: SemanticsPropertyKey<AccessibilityAction<() -> Boolean>>) =
+    fun performSemanticsAction(action: SemanticsPropertyKey<AccessibilityAction<() -> Boolean>>) =
         waitFor {
             interaction.performSemanticsAction(action)
         }
 
     /** Text actions **/
     /** clears text **/
-    fun clearText() =
-        waitFor {
-            interaction.apply { performTextClearance() }
-        }
+    fun clearText() = waitFor(interaction::performTextClearance)
 
     /** types [text] **/
     fun typeText(text: String) =
@@ -150,74 +149,26 @@ interface NodeActions : NodeAssertions {
             interaction.apply { performTextReplacement(text) }
         }
 
-    /** performs ime action **/
-    fun performImeAction() =
+    /** simulates an [eventType] for a given [key] **/
+    fun pressKey(
+        key: Key,
+        eventType: KeyEventType = KeyEventType.KeyUp
+    ) =
         waitFor {
-            interaction.apply { performImeAction() }
-        }
-
-    /** performs [keyEvent] **/
-    fun pressKey(keyEvent: KeyEvent) =
-        waitFor {
-            interaction.apply { performKeyPress(keyEvent) }
-        }
-
-    /** returns node at child [position] **/
-    fun onChildAt(position: Int) =
-        waitFor {
-            OnNode(interaction.onChildAt(position))
-        }
-
-    /** returns a child node (only if node has one child) **/
-    fun onChild() =
-        waitFor {
-            OnNode(interaction.onChild())
-        }
-
-    /** returns a parent node (only if node has one parent) **/
-    fun onParent() =
-        waitFor { OnNode(interaction.onParent()) }
-
-    /** returns a sibling node (only if node has one sibling) **/
-    fun onSibling() =
-        waitFor {
-            OnNode(interaction.onSibling())
-        }
-
-    /** returns a node from children with matcher from given [node] **/
-    fun onChild(node: OnNode) =
-        waitFor {
-            OnNode(interaction.onChildren().filterToOne(node.finalMatcher))
-        }
-
-    /** returns a node from children with matcher from given [ancestor] **/
-    fun onAncestor(ancestor: OnNode) =
-        waitFor {
-            OnNode(interaction.onAncestors().filterToOne(ancestor.finalMatcher))
-        }
-
-    /** returns a node from siblings with matcher from given [sibling] **/
-    fun onSibling(sibling: OnNode) =
-        waitFor {
-            OnNode(interaction.onSiblings().filterToOne(sibling.finalMatcher))
-        }
-
-    /** returns children node collection **/
-    fun onChildren() =
-        waitFor {
-            OnNodes(interaction.onChildren())
-        }
-
-    /** returns sibling node collection **/
-    fun onSiblings() =
-        waitFor {
-            OnNodes(interaction.onSiblings())
-        }
-
-    /** returns ancestor node collection **/
-    fun onAncestors() =
-        waitFor {
-            OnNodes(interaction.onAncestors())
+            interaction.apply {
+                @Suppress("DEPRECATION")
+                val type = when (eventType) {
+                    KeyEventType.KeyUp -> NativeKeyEvent.ACTION_UP
+                    KeyEventType.KeyDown -> NativeKeyEvent.ACTION_DOWN
+                    else -> NativeKeyEvent.ACTION_MULTIPLE
+                }
+                val nativeKeyEvent = NativeKeyEvent(
+                    type,
+                    key.nativeKeyCode
+                )
+                performSemanticsAction(SemanticsActions.RequestFocus)
+                performKeyPress(KeyEvent(nativeKeyEvent))
+            }
         }
 
     private fun waitFor(block: () -> Any) = wait(block = block) as NodeActions

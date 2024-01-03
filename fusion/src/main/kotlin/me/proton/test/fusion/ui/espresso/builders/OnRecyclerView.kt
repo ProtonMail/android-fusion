@@ -26,7 +26,7 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnHolderItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import me.proton.test.fusion.ui.espresso.EspressoWaiter
+import me.proton.test.fusion.ui.FusionWaiter
 import me.proton.test.fusion.ui.espresso.wrappers.EspressoActions
 import me.proton.test.fusion.ui.espresso.wrappers.EspressoActions.EspressoRecyclerViewActions
 import me.proton.test.fusion.ui.espresso.wrappers.EspressoMatchers
@@ -34,7 +34,7 @@ import org.hamcrest.Matcher
 import java.util.concurrent.atomic.AtomicReference
 
 class OnRecyclerView : EspressoMatchers<OnRecyclerView>(), EspressoRecyclerViewActions,
-    EspressoWaiter {
+    FusionWaiter {
     private val position get() = AtomicReference<Int>(null)
     private val viewHolderMatcher get() = AtomicReference<Matcher<ViewHolder>>(null)
     override val interaction: ViewInteraction

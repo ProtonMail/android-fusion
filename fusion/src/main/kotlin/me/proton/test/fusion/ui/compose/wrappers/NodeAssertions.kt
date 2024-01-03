@@ -40,32 +40,32 @@ import androidx.compose.ui.test.assertIsToggleable
 import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import me.proton.test.fusion.FusionConfig
 import me.proton.test.fusion.FusionConfig.Compose
-import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor
+import me.proton.test.fusion.ui.compose.ComposeWaiter.waitFor as wait
 import kotlin.time.Duration
 
-typealias NodeInteraction =
-    ComposeTestRule.() -> SemanticsNodeInteraction
+typealias NodeInteraction = ComposeTestRule.() -> SemanticsNodeInteraction
 
 /** A collection of Compose assertion wrappers **/
 interface NodeAssertions : ComposeInteraction<SemanticsNodeInteraction> {
 
     override val composeInteraction: NodeInteraction
-        get() = { onNode(finalMatcher, shouldUseUnmergedTree) }
+        get() = { onNode(matcher, shouldUseUnmergedTree) }
 
     /** Waits for node [assertion] with given [timeout] **/
     fun await(
         timeout: Duration = Compose.waitTimeout.get(),
         assertion: NodeAssertions.() -> NodeAssertions
-    ) = waitFor(timeout) { assertion() }
+    ) = wait(timeout) { assertion() }
 
     /** Assert node exists **/
-    fun assertExists() = apply {
+    fun assertExists() = waitFor {
         interaction.assertExists()
     }
 
     /** Assert node contains [text] **/
-    fun assertContainsText(text: String) = apply {
+    fun assertContainsText(text: String) = waitFor {
         interaction.assertTextContains(
             text,
             substring = true,
@@ -74,72 +74,90 @@ interface NodeAssertions : ComposeInteraction<SemanticsNodeInteraction> {
     }
 
     /** Assert node does not exist **/
-    fun assertDoesNotExist() = apply {
-        interaction.apply { assertDoesNotExist() }
+    fun assertDoesNotExist() = waitFor {
+        interaction.assertDoesNotExist()
     }
 
     /** Assert node is displayed **/
-    fun assertIsDisplayed() = apply {
+    fun assertIsDisplayed() = waitFor {
         interaction.assertIsDisplayed()
     }
 
     /** Assert node is not displayed **/
-    fun assertIsNotDisplayed() = apply {
+    fun assertIsNotDisplayed() = waitFor {
         interaction.assertIsNotDisplayed()
     }
 
     /** Assert node is enabled **/
-    fun assertEnabled() = apply {
+    fun assertEnabled() = waitFor {
         interaction.assertIsEnabled()
     }
 
     /** Assert node is disabled **/
-    fun assertDisabled() = apply {
+    fun assertDisabled() = waitFor {
         interaction.assertIsNotEnabled()
     }
 
+    @Deprecated("assertIsAsserted() is deprecated", ReplaceWith("assertIsOn()"))
     /** Assert node is checked **/
-    fun assertIsAsserted() = apply {
+    fun assertIsAsserted() = waitFor {
         interaction.assertIsOn()
     }
 
+    @Deprecated("assertIsNotAsserted() is deprecated", ReplaceWith("assertIsOff()"))
     /** Assert node is not checked **/
-    fun assertIsNotAsserted() = apply {
+    fun assertIsNotAsserted() = waitFor {
+        interaction.assertIsOff()
+    }
+
+    /** Assert node is not checked **/
+    fun assertIsOn() = waitFor {
+        interaction.assertIsOff()
+    }
+
+    /** Assert node is not checked **/
+    fun assertIsOff() = waitFor {
         interaction.assertIsOff()
     }
 
     /** Assert node is selected **/
-    fun assertIsSelected() = apply {
+    fun assertIsSelected() = waitFor {
         interaction.assertIsSelected()
     }
 
     /** Assert node is not selected **/
-    fun assertIsNotSelected() = apply {
+    fun assertIsNotSelected() = waitFor {
         interaction.assertIsNotSelected()
     }
 
+    @Deprecated("assertIsAssertable() is deprecated", ReplaceWith("assertIsToggleable"))
     /** Assert node is checkable **/
-    fun assertIsAssertable() = apply {
+    fun assertIsAssertable() = waitFor {
+        interaction.assertIsToggleable()
+    }
+
+    /** Assert node is toggleable **/
+    fun assertIsToggleable() = waitFor {
         interaction.assertIsToggleable()
     }
 
     /** Assert node is selectable **/
-    fun assertSelectable() = apply {
+    fun assertSelectable() = waitFor {
         interaction.assertIsSelectable()
     }
 
     /** Assert node is focused **/
-    fun assertIsFocused() = apply {
+    fun assertIsFocused() = waitFor {
         interaction.assertIsFocused()
     }
 
     /** Assert node is not focused **/
-    fun assertIsNotFocused() = apply {
+    fun assertIsNotFocused() = waitFor {
         interaction.assertIsNotFocused()
     }
 
     /** Assert node content description [contentDescription] **/
-    fun assertContentDescContains(contentDescription: String, exactly: Boolean = false) = apply {
+    fun assertContentDescContains(contentDescription: String, exactly: Boolean = false) = waitFor {
         interaction.assertContentDescriptionContains(
             contentDescription,
             substring = exactly,
@@ -148,22 +166,27 @@ interface NodeAssertions : ComposeInteraction<SemanticsNodeInteraction> {
     }
 
     /** Assert progress bar [range] **/
-    fun assertProgressBar(range: ProgressBarRangeInfo) = apply {
+    fun assertProgressBar(range: ProgressBarRangeInfo) = waitFor {
         interaction.assertRangeInfoEquals(range)
     }
 
     /** Assert node is clickable **/
-    fun assertClickable() = apply {
+    fun assertClickable() = waitFor {
         interaction.assertHasClickAction()
     }
 
     /** Assert node is not clickable **/
-    fun assertIsNotClickable() = apply {
+    fun assertIsNotClickable() = waitFor {
         interaction.assertHasNoClickAction()
     }
 
     /** Assert custom [matcher] with [messagePrefixOnError] **/
-    fun assertMatches(matcher: SemanticsMatcher, messagePrefixOnError: String) = apply {
+    fun assertMatches(matcher: SemanticsMatcher, messagePrefixOnError: String) = waitFor {
         interaction.assert(matcher) { messagePrefixOnError }
     }
+
+    private fun waitFor(block: () -> Any) = wait(
+        timeout = Compose.assertTimeout.get(),
+        block = block,
+    ) as NodeAssertions
 }

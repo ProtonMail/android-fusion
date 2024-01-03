@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2022 Proton Technologies AG
- * This file is part of Proton Technologies AG and ProtonCore.
+ * This file is part of Proton AG and ProtonCore.
  *
  * ProtonCore is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,19 @@
  * along with ProtonCore.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.proton.test.fusion.ui.common
+package me.proton.test.fusion.ui.espresso.extensions
 
-import me.proton.test.fusion.extension.handleErrorLog
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.Calendar
+import java.util.Date
 
-object ActionHandler {
-    private val exceptionCaughtFlag: AtomicBoolean = AtomicBoolean(false)
+val Date.asYear: Int get() = Calendar.getInstance()
+    .apply { time = this@asYear }
+    .get(Calendar.YEAR)
 
-    fun <T> handle(block: () -> T): Result<T> = try {
-        Result
-            .success(block())
-            .apply { exceptionCaughtFlag.set(false) }
-    } catch (throwable: Throwable) {
-        throwable.takeIf { !exceptionCaughtFlag.get() }?.handleErrorLog()
-        exceptionCaughtFlag.set(false)
-        Result.failure(throwable)
-    }
-}
+val Date.asMonth: Int get() = Calendar.getInstance()
+    .apply { time = this@asMonth }
+    .get(Calendar.MONTH)
+
+val Date.asDayOfMonth: Int get() = Calendar.getInstance()
+    .apply { time = this@asDayOfMonth }
+    .get(Calendar.DAY_OF_MONTH)

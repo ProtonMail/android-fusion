@@ -33,3 +33,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "fusion"
 include ':fusion'
+include ':fusion-lint'

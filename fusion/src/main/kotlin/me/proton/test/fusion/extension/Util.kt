@@ -16,22 +16,29 @@
  * along with ProtonCore.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.proton.test.fusion.ui.compose.wrappers
+package me.proton.test.fusion.extension
 
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.junit4.ComposeTestRule
+import android.util.Log
 import me.proton.test.fusion.FusionConfig
 
-interface ComposeInteraction<T> {
-    val matcher: SemanticsMatcher
-    var shouldUseUnmergedTree: Boolean
-    val overrideInteraction: T?
-    val composeInteraction: ComposeTestRule.() -> T
 
-    val interaction: T
-        get() = overrideInteraction ?: FusionConfig
-            .Compose
-            .testRule
-            .get()
-            .composeInteraction()
+fun MutableSet<Throwable>.warnIfMultiple(): MutableSet<Throwable> = apply {
+    if (count() > 1) {
+        Log.w(FusionConfig.fusionTag, "Multiple exception caught during verification")
+        forEach {
+            Log.w(FusionConfig.fusionTag, it)
+        }
+    }
+}
+
+fun Throwable.handleErrorLog() {
+    // Relevant information is usually on the second line of AssertionError message
+    // In other cases it's the first line
+    val messageLine = if (this is AssertionError && message?.lines()?.count()!! > 1) 1 else 0
+    message
+        ?.lines()
+        ?.get(messageLine)
+        .let {
+            Log.d(FusionConfig.fusionTag, "Condition was not met immediately: $it")
+        }
 }

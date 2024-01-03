@@ -23,12 +23,13 @@ import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import me.proton.test.fusion.FusionConfig.Compose
 import me.proton.test.fusion.FusionConfig.fusionTag
-import me.proton.test.fusion.ui.common.ActionHandler.handle
-import me.proton.test.fusion.ui.compose.builders.OnNode
+import me.proton.test.fusion.FusionConfig.watchInterval
+import me.proton.test.fusion.ui.common.ActionHandler
 import me.proton.test.fusion.ui.compose.wrappers.ComposeInteraction
-import me.proton.test.fusion.ui.espresso.builders.OnView
 import kotlin.time.Duration
 
 object ComposeWaiter {
@@ -42,13 +43,14 @@ object ComposeWaiter {
             try {
                 Compose.before()
                 testRule.waitUntil(timeout.inWholeMilliseconds) {
-                    handle {
+                    ActionHandler.handle {
                         block()
                     }.onSuccess {
                         it.handleLog()
                         Compose.onSuccess()
                     }.onFailure {
                         throwable = it
+                        runBlocking { delay(watchInterval.get()) }
                     }.isSuccess
                 }
                 Compose.after()

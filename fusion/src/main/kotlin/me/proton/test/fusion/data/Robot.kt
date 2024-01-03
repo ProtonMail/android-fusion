@@ -16,21 +16,30 @@
  * along with ProtonCore.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.proton.test.fusion.ui.common
+package me.proton.test.fusion.data
 
-import me.proton.test.fusion.extension.handleErrorLog
-import java.util.concurrent.atomic.AtomicBoolean
+import me.proton.test.fusion.FusionConfig
+import me.proton.test.fusion.ui.FusionWaiter
+import kotlin.time.Duration
 
-object ActionHandler {
-    private val exceptionCaughtFlag: AtomicBoolean = AtomicBoolean(false)
+interface Robot: FusionWaiter {
 
-    fun <T> handle(block: () -> T): Result<T> = try {
-        Result
-            .success(block())
-            .apply { exceptionCaughtFlag.set(false) }
-    } catch (throwable: Throwable) {
-        throwable.takeIf { !exceptionCaughtFlag.get() }?.handleErrorLog()
-        exceptionCaughtFlag.set(false)
-        Result.failure(throwable)
-    }
+    fun robotDisplayed()
+
+    infix fun <T : Robot> into(robot: T): T = robot
+
+    infix fun <T> into(robot: T): T = robot
+
+    infix fun <T : Robot> FusionActions.into(robot: T) = robot
+
+    fun <T : Robot> T.verify(
+        waitTimeout: Duration? = null,
+        watchInterval: Duration? = null,
+        block: T.() -> Unit,
+    ): T = waitFor(
+        config = FusionConfig.Robot,
+        timeout = waitTimeout ?: FusionConfig.Robot.waitTimeout.get(),
+        interval = watchInterval ?: FusionConfig.Robot.watchInterval.get(),
+        conditionBlock = { block() }
+    )
 }

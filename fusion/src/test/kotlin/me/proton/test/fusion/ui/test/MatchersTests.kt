@@ -51,7 +51,7 @@ class MatchersTests {
     fun finalMatcherMatchesAddedSemanticsMatchers() {
         val expectedFinalMatcher = hasText("text") and hasTestTag("Tag")
         val node = OnNode().withText("text").withTag("Tag")
-        assert(node.finalMatcher.description == expectedFinalMatcher.description)
+        assert(node.matcher.description == expectedFinalMatcher.description)
     }
 
     @Test
