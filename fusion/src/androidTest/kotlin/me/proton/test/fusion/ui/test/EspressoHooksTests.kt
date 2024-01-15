@@ -35,7 +35,7 @@ class EspressoHooksTests {
 
     @Before
     fun setUp() {
-        FusionConfig.Espresso.waitTimeout.set(0.seconds)
+        FusionConfig.Espresso.waitTimeout.set(3.seconds)
 
         // reset
         onSuccessCalled = false

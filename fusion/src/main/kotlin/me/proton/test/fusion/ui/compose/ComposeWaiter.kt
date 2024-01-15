@@ -18,59 +18,54 @@
 
 package me.proton.test.fusion.ui.compose
 
-import androidx.compose.ui.test.ComposeTimeoutException
-import androidx.compose.ui.test.SemanticsNodeInteraction
-import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import me.proton.test.fusion.FusionConfig.Compose
 import me.proton.test.fusion.FusionConfig.fusionTag
-import me.proton.test.fusion.FusionConfig.watchInterval
-import me.proton.test.fusion.ui.common.ActionHandler
 import me.proton.test.fusion.ui.compose.wrappers.ComposeInteraction
 import kotlin.time.Duration
 
 object ComposeWaiter {
     fun <T> ComposeInteraction<T>.waitFor(
         timeout: Duration = Compose.waitTimeout.get(),
+        interval: Duration = Compose.watchInterval.get(),
         block: () -> Any,
     ): ComposeInteraction<T> = apply {
         Compose.testRule.get().let { testRule ->
-            var throwable: Throwable = ComposeTimeoutException("Condition timed out")
+            var throwableToThrow: Throwable = IllegalStateException("ComposeWaiter timed out")
+            var callSuccessful = false
+
+            Compose.before()
+
             testRule.waitForIdle()
-            try {
-                Compose.before()
+
+            runCatching {
                 testRule.waitUntil(timeout.inWholeMilliseconds) {
-                    ActionHandler.handle {
-                        block()
-                    }.onSuccess {
-                        it.handleLog()
-                        Compose.onSuccess()
-                    }.onFailure {
-                        throwable = it
-                        runBlocking { delay(watchInterval.get()) }
-                    }.isSuccess
+                    runCatching(block)
+                        .onSuccess {
+                            Compose.onSuccess()
+                        }.onFailure {
+                            throwableToThrow = it
+                            runBlocking { delay(interval) }
+                        }
+                        .isSuccess
+                        .also { callSuccessful = it }
                 }
-                Compose.after()
-            } catch (ex: ComposeTimeoutException) {
+            }.onFailure {
                 testRule
                     .onRoot(shouldUseUnmergedTree)
-                    .handleLog(Compose.shouldPrintHierarchyOnFailure.get())
+                    .takeIf { Compose.shouldPrintHierarchyOnFailure.get() }
+                    ?.printToLog(fusionTag)
                 Compose.onFailure()
-                throw throwable
+            }
+
+            Compose.after()
+
+            if (!callSuccessful) {
+                throwableToThrow.let { throw it }
             }
         }
     }
-
-    private fun <T> T.handleLog(shouldPrint: Boolean = Compose.shouldPrintToLog.get()) =
-        apply {
-            if (!shouldPrint)
-                return@apply
-            when (this) {
-                is SemanticsNodeInteraction -> printToLog(fusionTag)
-                is SemanticsNodeInteractionCollection -> printToLog(fusionTag)
-            }
-        }
 }
