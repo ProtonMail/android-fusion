@@ -23,7 +23,6 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
-import me.proton.test.fusion.ui.extension.plus
 import me.proton.test.fusion.ui.uiautomator.ByObject
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
@@ -37,7 +36,6 @@ object FusionConfig : Config() {
         val useUnmergedTree: AtomicBoolean = AtomicBoolean(false)
         val testRule: AtomicReference<ComposeTestRule> = AtomicReference(null)
         val shouldPrintHierarchyOnFailure: AtomicBoolean = AtomicBoolean(false)
-        val shouldPrintToLog: AtomicBoolean = AtomicBoolean(false)
     }
 
     object Espresso : Config()
@@ -91,3 +89,5 @@ open class Config {
         set(value) { field += value }
 }
 
+
+private operator fun (() -> Any).plus(other: () -> Any): () -> Unit = { this().also { other() } }

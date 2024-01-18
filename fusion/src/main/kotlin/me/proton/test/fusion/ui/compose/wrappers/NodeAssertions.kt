@@ -57,7 +57,7 @@ interface NodeAssertions : ComposeInteraction<SemanticsNodeInteraction> {
     fun await(
         timeout: Duration = Compose.waitTimeout.get(),
         assertion: NodeAssertions.() -> NodeAssertions
-    ) = wait(timeout) { assertion() }
+    ) = wait(timeout = timeout) { assertion() }
 
     /** Assert node exists **/
     fun assertExists() = waitFor {

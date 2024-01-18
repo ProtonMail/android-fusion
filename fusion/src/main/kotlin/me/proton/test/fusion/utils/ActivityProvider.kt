@@ -57,4 +57,3 @@ object ActivityProvider {
         return currentActivity[0]
     }
 }
-

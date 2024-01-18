@@ -18,18 +18,13 @@
 
 package me.proton.test.fusion.ui
 
-import android.util.Log
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import me.proton.test.fusion.Config
 import me.proton.test.fusion.FusionConfig.Espresso
-import me.proton.test.fusion.FusionConfig.fusionTag
-import me.proton.test.fusion.ui.common.ActionHandler
-import java.util.concurrent.TimeoutException
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.ZERO
 
 interface FusionWaiter {
     fun <T> T.waitFor(
@@ -39,33 +34,29 @@ interface FusionWaiter {
         conditionBlock: () -> Any,
     ): T = apply {
         config.before()
+
+        var throwableToThrow: Throwable = IllegalStateException("FusionWaiter timed out")
+
         runBlocking {
-
-            val timeoutMessage = "Code block did not succeed in ${timeout.inWholeMilliseconds}ms"
-            var throwableToThrow: Throwable = TimeoutException(timeoutMessage)
-            var result: Result<Any> = Result.failure(throwableToThrow)
-
-            try {
-                withTimeout(if (timeout == ZERO) interval else timeout) {
-                    while (result.isFailure) {
-                        result = ActionHandler
-                            .handle(conditionBlock)
-                            .onFailure {
-                                throwableToThrow = it
-                                delay(interval)
-                            }
-                            .onSuccess {
-                                config.onSuccess()
-                                return@withTimeout
-                            }
-                    }
+            val result = withTimeoutOrNull(timeout) {
+                while (isActive) {
+                    runCatching(conditionBlock)
+                        .onFailure {
+                            throwableToThrow = it
+                            delay(interval)
+                        }
+                        .onSuccess {
+                            config.onSuccess()
+                            return@withTimeoutOrNull
+                        }
                 }
-            } catch (ex: TimeoutCancellationException) {
-                Log.e(fusionTag, timeoutMessage, ex)
+            }
+
+            config.after()
+
+            if (result == null) {
                 config.onFailure()
-                throw throwableToThrow
-            } finally {
-                config.after()
+                throw throwableToThrow.fillInStackTrace()
             }
         }
     }

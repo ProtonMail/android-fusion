@@ -93,7 +93,6 @@ interface EspressoActions : EspressoAssertions, FusionActions {
     fun openDrawer() = perform(DrawerActions.open())
 
     fun scrollToNestedScrollView() = apply {
-        // TODO: Check with standard impl
         interaction.check(ViewAssertions.matches(CoreMatchers.anything()))
             .perform(Actions.NestedScrollViewExtension())
     }

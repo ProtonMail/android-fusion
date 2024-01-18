@@ -18,24 +18,25 @@
 
 package me.proton.test.fusion.ui.test
 
+import androidx.compose.material.Text
+import me.proton.test.fusion.Fusion.node
 import me.proton.test.fusion.FusionConfig
-import me.proton.test.fusion.ui.FusionWaiter
+import me.proton.test.fusion.ui.compose.FusionComposeTest
 import org.junit.Before
 import org.junit.Test
 import kotlin.time.Duration.Companion.seconds
 
-class EspressoHooksTests {
+class ComposeHooksTests : FusionComposeTest() {
+
     private var onSuccessCalled = false
     private var beforeCalled = false
     private var afterCalled = false
     private var onFailureCalled = false
     private var onFailureCalled2 = false
 
-    private val espressoWaiter: FusionWaiter = object : FusionWaiter { }
-
     @Before
     fun setUp() {
-        FusionConfig.Espresso.waitTimeout.set(3.seconds)
+        FusionConfig.Compose.waitTimeout.set(3.seconds)
 
         // reset
         onSuccessCalled = false
@@ -45,11 +46,11 @@ class EspressoHooksTests {
         onFailureCalled2 = false
 
 
-        FusionConfig.Espresso.onFailure = { onFailureCalled = true }
-        FusionConfig.Espresso.onFailure = { onFailureCalled2 = true }
-        FusionConfig.Espresso.onSuccess = { onSuccessCalled = true }
-        FusionConfig.Espresso.before = { beforeCalled = true }
-        FusionConfig.Espresso.after = { afterCalled = true }
+        FusionConfig.Compose.onFailure = { onFailureCalled = true }
+        FusionConfig.Compose.onFailure = { onFailureCalled2 = true }
+        FusionConfig.Compose.onSuccess = { onSuccessCalled = true }
+        FusionConfig.Compose.before = { beforeCalled = true }
+        FusionConfig.Compose.after = { afterCalled = true }
 
 
         assert(!onFailureCalled)
@@ -61,32 +62,37 @@ class EspressoHooksTests {
 
     @Test
     fun failureHooks() {
-        with(espressoWaiter) {
-            try {
-                waitFor {
-                    assert(false)
-                }
-            } catch (e: AssertionError) {
-                assert(onFailureCalled)
-                assert(onFailureCalled2)
-                assert(afterCalled)
-                assert(beforeCalled)
-                assert(!onSuccessCalled)
+        withContent {
+            Text("text")
+        }
+
+        try {
+            node.withText("not-text").await {
+                assertIsDisplayed()
             }
+        } catch (e: AssertionError) {
+            assert(onFailureCalled)
+            assert(onFailureCalled2)
+            assert(afterCalled)
+            assert(beforeCalled)
+            assert(!onSuccessCalled)
         }
     }
 
     @Test
     fun successHooks() {
-        with(espressoWaiter) {
-            waitFor {
-                assert(true)
-            }
-            assert(onSuccessCalled)
-            assert(afterCalled)
-            assert(beforeCalled)
-            assert(!onFailureCalled)
-            assert(!onFailureCalled2)
+        withContent {
+            Text("text")
         }
+
+        node.withText("text").await {
+            assertIsDisplayed()
+        }
+
+        assert(onSuccessCalled)
+        assert(afterCalled)
+        assert(beforeCalled)
+        assert(!onFailureCalled)
+        assert(!onFailureCalled2)
     }
 }

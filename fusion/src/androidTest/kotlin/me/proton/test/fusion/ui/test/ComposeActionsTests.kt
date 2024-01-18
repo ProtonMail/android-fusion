@@ -49,11 +49,22 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.text.input.ImeAction
+import me.proton.test.fusion.FusionConfig
+import org.junit.Before
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
 
 class ComposeActionsTests : FusionComposeTest() {
+
+    @Before
+    fun configure() {
+        FusionConfig.Compose.waitTimeout.set(1.seconds)
+        FusionConfig.Compose.shouldPrintHierarchyOnFailure.set(true)
+    }
+
     @Test
     fun clickButton() {
+
         var clicked = false
 
         withContent {

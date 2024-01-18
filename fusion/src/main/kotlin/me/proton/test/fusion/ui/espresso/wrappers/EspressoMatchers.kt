@@ -182,6 +182,9 @@ abstract class EspressoMatchers<T> {
     fun containsTextIgnoringCase(text: String) =
         addViewMatcher(ViewMatchers.withText(CoreMatchers.containsStringIgnoringCase(text)))
 
+    fun containsText(@StringRes text: Int, vararg formatArgs: Any) =
+        addViewMatcher(ViewMatchers.withSubstring(targetContext.getString(text, formatArgs)))
+
     /** Other matchers **/
     fun supportsInputMethods() = addViewMatcher(ViewMatchers.supportsInputMethods())
 
