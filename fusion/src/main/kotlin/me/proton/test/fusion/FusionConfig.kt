@@ -30,6 +30,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 object FusionConfig : Config() {
+    /** Logcat tag **/
     const val fusionTag: String = "FUSION"
 
     object Compose : Config() {
@@ -59,26 +60,30 @@ object FusionConfig : Config() {
         var shouldSearchByObjectEachAction: Boolean = false
         var shouldSearchUiObjectEachAction: Boolean = false
 
-        fun boost() {
+        /**
+         * By calling this function you can speed up UIAutomator execution time significantly.
+         */
+        fun boost(idleTimeout: Long = 0L, selectorTimeout: Long = 0L, actionTimeout: Long = 50L) {
             Configurator
                 .getInstance()
                 .apply {
-                    waitForIdleTimeout = 0
-                    waitForSelectorTimeout = 0
-                    actionAcknowledgmentTimeout = 50
+                    waitForIdleTimeout = idleTimeout
+                    waitForSelectorTimeout = selectorTimeout
+                    actionAcknowledgmentTimeout = actionTimeout
                 }
         }
     }
 }
 
-
 open class Config {
     val targetContext: Context get() = InstrumentationRegistry.getInstrumentation().targetContext
+
+    /** Set of default timeouts **/
     val waitTimeout: AtomicReference<Duration> = AtomicReference(10000.milliseconds)
     val assertTimeout: AtomicReference<Duration> = AtomicReference(25.milliseconds)
     val watchInterval: AtomicReference<Duration> = AtomicReference(25.milliseconds)
 
-    /** Hooks **/
+    /** Test execution hooks **/
     var before: () -> Unit = { }
         set(value) { field += value }
     var after: () -> Unit = { }
@@ -88,6 +93,5 @@ open class Config {
     var onSuccess: () -> Unit = { }
         set(value) { field += value }
 }
-
 
 private operator fun (() -> Any).plus(other: () -> Any): () -> Unit = { this().also { other() } }
