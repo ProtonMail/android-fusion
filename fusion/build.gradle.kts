@@ -58,7 +58,7 @@ android {
 
 mavenPublishing {
     group = "me.proton.test"
-    version = "0.9.96"
+    version = "0.9.97"
     pom {
         scm {
             connection.set(GITHUB_PROTONMAIL_DOMAIN)
