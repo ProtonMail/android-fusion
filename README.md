@@ -17,10 +17,10 @@ repositories {
 }
 
 // build.gradle
-androidTestImplementation "me.proton.test:fusion:0.9.62"
+androidTestImplementation "me.proton.test:fusion:0.9.97"
 
 // build.gradle.kts
-androidTestImplementation("me.proton.test:fusion:0.9.62")
+androidTestImplementation("me.proton.test:fusion:0.9.97")
 ```
 
 To start using **Fusion API** simply import required builder
@@ -214,11 +214,3 @@ Defines hooks for key moments in the test lifecycle, which can be customized per
 - `onSuccess`: Invoked when a test case succeeds.
 
 These hooks provide a flexible mechanism to integrate setup, teardown, and custom behavior based on test outcomes.
-
-## License
-
-The code and data files in this distribution are licensed under the terms of the GNU General Public
-License as published by the Free Software Foundation, either version 3 of the License, or (at your
-option) any later version. See <https://www.gnu.org/licenses/> for a copy of this license.
-
-Copyright (c) 2021 Proton Technologies AG
