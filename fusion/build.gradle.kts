@@ -26,7 +26,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     id("signing")
-    id("com.vanniktech.maven.publish") version "0.22.0"
+    id("com.vanniktech.maven.publish") version "0.28.0"
 }
 
 android {
@@ -58,7 +58,7 @@ android {
 
 mavenPublishing {
     group = "me.proton.test"
-    version = "0.9.97"
+    version = "0.9.98"
     pom {
         scm {
             connection.set(GITHUB_PROTONMAIL_DOMAIN)
