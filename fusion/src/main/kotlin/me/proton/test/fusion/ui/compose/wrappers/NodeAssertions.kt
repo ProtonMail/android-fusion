@@ -116,9 +116,9 @@ interface NodeAssertions : ComposeInteraction<SemanticsNodeInteraction> {
         interaction.assertIsOff()
     }
 
-    /** Assert node is not checked **/
+    /** Assert node is checked **/
     fun assertIsOn() = waitFor {
-        interaction.assertIsOff()
+        interaction.assertIsOn()
     }
 
     /** Assert node is not checked **/
